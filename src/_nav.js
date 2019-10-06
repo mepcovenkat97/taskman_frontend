@@ -1,28 +1,34 @@
 export default {
-   items: [
-     {
-       name: "Dashboard",
-       url: "/dashboard"
-     },
-     {
-       name: "Role Management",
-       url: "/dashboard/rolemanagement"
-     },
-     {
-       name: "Community Post",
-       url: "/dashboard/communitypost"
-     },
-     {
-       name: "Banner",
-       url: "/dashboard/banner"
-     },
-     {
-       name: "Youtube Videos",
-       url: "/dashboard/youtube"
-     },
-     {
-       name: "User Management",
-       url: "/dashboard/usermanagement"
-     }
-   ]
- };
+  items: [
+    {
+      name: "Placeholder",
+      url: "/dashboard",
+      icon: "icon-speedometer"
+    },
+    {
+      name: "Workspace",
+      url: "/dashboard/workspace",
+      icon: "icon-people"
+    },
+    {
+      name: "Project",
+      url: "/dashboard/project",
+      icon: "icon-bubbles"
+    },
+    {
+      name: "Team",
+      url: "/dashboard/team",
+      icon: "icon-picture"
+    },
+    {
+      name: "Task",
+      url: "/dashboard/task",
+      icon: "icon-social-youtube"
+    },
+    {
+      name: "User",
+      url: "/dashboard/user",
+      icon: "icon-user"
+    }
+  ]
+};

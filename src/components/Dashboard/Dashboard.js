@@ -1,6 +1,6 @@
 import React, { Component, Suspense } from "react";
 import { Container } from "reactstrap";
-import Header from "./header";
+import Header from "./Header";
 import { Switch, Route, Redirect } from "react-router-dom";
 import * as router from "react-router-dom";
 
@@ -15,8 +15,12 @@ import {
   AppSidebarNav2 as AppSidebarNav
 } from "@coreui/react";
 
+import navigation from "../../_nav";
 import routes from "../../routes";
-import navigation from "../../_nav"
+
+import { connect } from "react-redux";
+
+// import { logoutAction } from "../../actions/authActions";
 
 export default class Dashboard extends Component {
   loading = () => (
@@ -93,3 +97,7 @@ export default class Dashboard extends Component {
   }
 }
 
+// export default connect(
+//   null,
+//   { logoutAction }
+// )(Dashboard);
