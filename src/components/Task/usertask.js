@@ -7,7 +7,8 @@ export default class UserTask extends Component{
    constructor(props){
       super(props);
       this.state = {
-         tasks:[]
+         tasks:[],
+         changed:null
       }
    }
 
@@ -19,6 +20,7 @@ export default class UserTask extends Component{
       try{
          const res = await getAllTask();
          const user = getUser();
+         
          this.setState({tasks:res.data})
          const filteredres = this.state.tasks.filter(task => task._id===user.user.taskid)
          this.setState({tasks:filteredres})
@@ -36,13 +38,14 @@ export default class UserTask extends Component{
               <th>Name</th>
               <th>Project</th>
               <th>Priority</th>
+              <th>Status</th>
               <th>Options</th>
             </tr>
             </thead>
             <tbody>
             {
-              this.state.tasks.map((project,index)=>{
-                return <UserTaskRow name={project.name} project={project.projectid} priority={project.priority}/>
+              this.state.tasks.map((task,index)=>{
+                return <UserTaskRow  changed={this.state.changed} status={task.status} id={task._id} name={task.name} project={task.projectid.title} priority={task.priority}/>
               })
             }
             </tbody>

@@ -40,7 +40,7 @@ export default class Login extends Component {
       console.log(user.type);
       if(user.type === 'admin')
       {
-        this.props.history.push("/dashboard");
+        this.props.history.push("/dashboard/workspace");
       }
       if(user.type === 'user')
       {
@@ -51,14 +51,7 @@ export default class Login extends Component {
       alert("Login Failed:", e.message);
     }
 
-    // console.log(auth.isAuth);
-    // if (!auth.isAuth) {
-    //   alert("Invalid Credentials");
-    //   return;
-    // }
-    // console.log("abc");
-
-    // console.log(this.props.history);
+ 
   };
 
   forgotPasswordHandler = () => {

@@ -11,3 +11,27 @@ export const getALlProject = async() => {
    })
    return res;
 }
+
+export const addProject = async data =>{
+   const token = getAuthToken();
+   console.log("Inside API Call")
+   console.log(data);
+   let res = await axios.post(`${apiUrl}/project`, data,{
+      headers:{
+         Authorization:token,
+         'Content-Type':"application/x-www-form-urlencoded"
+      }
+   });
+   return res;
+}
+
+export const updateProject = async (id,data) =>{
+   const token = getAuthToken();
+   let res = await axios.put(`${apiUrl}/project/${id}`,data,{
+      headers:{
+         Authorization:token,
+         'Content-Type':"application/x-www-form-urlencoded"
+      }
+   });
+   return res;
+}

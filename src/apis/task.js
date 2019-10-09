@@ -11,3 +11,24 @@ export const getAllTask = async() => {
    })
    return res;
 }
+
+export const addTask = async (data) => {
+   const token = getAuthToken();
+   let res = await axios.post(`${apiUrl}/task`,data,{
+      headers:{
+         Authorization:token,
+         'Content-Type':"application/x-www-form-urlencoded"
+      }
+   })
+   return res;
+}
+
+export const updateTaskStatus = async (id,data) => {
+   const token = getAuthToken();
+   let res = await axios.put(`${apiUrl}/task/${id}`,data,{
+      headers:{
+         Authorization:token,
+         'Content-Type':"application/x-www-form-urlencoded"
+      }
+   })
+}

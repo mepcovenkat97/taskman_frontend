@@ -13,8 +13,10 @@ import {
    Row,
  } from 'reactstrap';
  import Form from 'react-bootstrap/Form'
-import { getAllTask } from '../../apis/task';
+import { getAllTask, addTask } from '../../apis/task';
 import TaskRow from "../Row/task";
+import { getALlProject } from '../../apis/project';
+import { getAllUser } from '../../apis/user';
 class Task extends Component{
 
    constructor(props) {
@@ -23,7 +25,13 @@ class Task extends Component{
         activeTab: new Array(2).fill('1'),
         file:null,
         tasks:[],
-        changed:false
+        projects:[],
+        users:[],
+        changed:false,
+        name:null,
+        projectid:null,
+        userid:null,
+        priority:null
       };
 
       this.toggle = this.toggle.bind(this);
@@ -32,6 +40,26 @@ class Task extends Component{
 
     componentDidMount = () => {
       this.getAllTaskDetail()
+      this.getAllProjectDetails()
+      this.getAllUserDetails()
+    }
+
+    async getAllUserDetails(){
+      try{
+        const res = await getAllUser()
+        this.setState({users:res.data})
+
+      }
+      catch(e){}
+    }
+
+    async getAllProjectDetails(){
+      try{
+        const res = await getALlProject()
+        this.setState({projects:res.data})
+        console.log(this.state.projects)
+      }
+      catch(e){}
     }
 
     async getAllTaskDetail(){
@@ -51,6 +79,31 @@ class Task extends Component{
       });
     }
 
+    createHandler = event => {
+      this.createTask();
+    }
+
+    async createTask(){
+      try{
+        let formdata = [];
+        formdata.push(encodeURIComponent("name")+'='+encodeURIComponent(this.state.name))
+        formdata.push(encodeURIComponent("projectid")+'='+encodeURIComponent(this.state.projectid))
+        formdata.push(encodeURIComponent('userid')+'='+encodeURIComponent(this.state.userid))
+       // formdata.push(encodeURIComponent('priority')+'='+encodeURIComponent(this.state.priority))
+        formdata = formdata.join("&")
+
+        const response = await addTask(formdata);
+        alert("Task Created");
+      }
+      catch(e){}
+    }
+
+    handleChange = event => {
+      event.preventDefault();
+      this.setState({[event.target.id]:event.target.value})
+      console.log(this.state.selected)
+    }
+
    tabPane() {
       return (
         <>
@@ -65,24 +118,36 @@ class Task extends Component{
                      <Form.Row>
                         <Form.Group as={Col} sm="12" md="6" controlId="formGridState">
                           <Form.Label>Task Name</Form.Label>
-                          <Form.Control type="text" placeholder="Name of the Task" />
+                          <Form.Control type="text" id="name" placeholder="Name of the Task" onChange={this.handleChange}/>
                         </Form.Group>
                         <Form.Group as={Col} sm="12" md="6" controlId="formGridState">
                           <Form.Label>Project</Form.Label>
-                          <Form.Control as="select">
+                          {/* <Form.Control as="select">
                             <option>Choose...</option>
                             <option>...</option>
-                          </Form.Control>
+                          </Form.Control> */}
+                          <Input type="select" id="projectid" onChange={this.handleChange}>
+                              <option>--Choose--</option>
+                            {
+                              this.state.projects.map((project,index)=>{
+                                return (<option key={index} value={project._id}> { project.title } </option>)
+                              })
+                            }
+                            </Input>
                         </Form.Group>
                      </Form.Row>
                         
                         <Form.Group as={Row} controlId="formGridState">
                           <Form.Label column sm="2">Assign To</Form.Label>
                           <Col sm="4">
-                           <Form.Control as="select">
-                             <option>Choose...</option>
-                             <option>...</option>
-                           </Form.Control>
+                          <Input type="select" id="userid" onChange={this.handleChange}>
+                              <option>--Choose--</option>
+                            {
+                              this.state.users.map((user,index)=>{
+                                return (<option key={index} value={user._id}> { user.name } </option>)
+                              })
+                            }
+                            </Input>
                           </Col>
                           <Form.Label column sm="2">Priority</Form.Label>
                           <Col sm="4">
@@ -103,7 +168,7 @@ class Task extends Component{
                         <FormGroup row>
                           <Col sm="4"></Col>
                             <Col sm="4" className="column">
-                              <Button type="submit" size="lg" color="success" ><i className="fa fa-dot-circle-o"></i> Create </Button>&nbsp;&nbsp;
+                              <Button type="submit" size="lg" color="success" onClick={this.createHandler}><i className="fa fa-dot-circle-o"></i> Create </Button>&nbsp;&nbsp;
                               <Button type="reset" size="lg" color="danger"><i className="fa fa-ban"></i> Cancel</Button>
 
                             </Col>

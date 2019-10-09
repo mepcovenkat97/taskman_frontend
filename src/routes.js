@@ -1,9 +1,5 @@
 import React from "react";
 
- const PlaceHolder = React.lazy(() =>
-   import("./components/Placeholder/placeholder")
- );
-
  const Workspace = React.lazy(() =>
    import("./components/Workspace/workspace")
  )
@@ -25,12 +21,12 @@ const User = React.lazy(() =>
 )
 
 const routes = [
-  {
-    path: "/dashboard",
-    exact: true,
-    name: "PlaceHolder",
-    component: PlaceHolder
-  },
+  // {
+  //   path: "/dashboard",
+  //   exact: true,
+  //   name: "PlaceHolder",
+  //   component: PlaceHolder
+  // },
   {
     path: "/dashboard/workspace",
     exact: true,

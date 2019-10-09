@@ -14,7 +14,9 @@ import {
  } from 'reactstrap';
  import Form from 'react-bootstrap/Form'
 import TeamRow from "../Row/team";
-import { getAllTeams } from '../../apis/team';
+import { getAllTeams, addTeam } from '../../apis/team';
+import { getALlProject } from '../../apis/project';
+import { getAllUser } from '../../apis/user';
 class Team extends Component{
 
    constructor(props) {
@@ -23,6 +25,11 @@ class Team extends Component{
         activeTab: new Array(2).fill('1'),
         file:null,
         teams:[],
+        projects:[],
+        users:[],
+        selected:null,
+        name:null,
+        team:null,
         changed:false
       };
 
@@ -32,6 +39,28 @@ class Team extends Component{
 
     componentDidMount(){
       this.getAllTeamDetails()
+      this.getAllProjectDetails()
+      this.getAllUserDetails()
+    }
+
+    async getAllUserDetails(){
+      try{
+        const res = await getAllUser()
+        const filterres = res.data.filter(data => !data.teamid)
+        this.setState({users:filterres})
+      }
+      catch(e){}
+    }
+
+    async getAllProjectDetails(){
+      try{
+        const res = await getALlProject()
+        console.log(res.data)
+        const filterres = res.data.filter(data => !data.teamid)
+        this.setState({projects:filterres})
+        console.log(this.state.projects)
+      }
+      catch(e){}
     }
 
     async getAllTeamDetails(){
@@ -51,6 +80,28 @@ class Team extends Component{
       });
     }
 
+    handleChange = event => {
+      event.preventDefault();
+       this.setState({[event.target.id]:event.target.value})
+       console.log(this.state.name, this.state.team)
+     }
+
+     createHandler = event => {
+       this.createTeam();
+     }
+
+     async createTeam(){
+       try{
+         let formdata = [];
+         formdata.push(encodeURIComponent('name')+'='+encodeURIComponent(this.state.name))
+         formdata.push(encodeURIComponent('projectid')+'='+encodeURIComponent(this.state.team))
+         formdata = formdata.join("&")
+         const response = await addTeam(formdata);
+         alert("Team Created")
+       }
+       catch(e){}
+     }
+
    tabPane() {
       return (
         <>
@@ -65,34 +116,39 @@ class Team extends Component{
                      <Form.Row>
                         <Form.Group as={Col} sm="12" md="6" controlId="formGridState">
                           <Form.Label>Team Name</Form.Label>
-                          <Form.Control type="text" placeholder="Name of the Team" />
+                          <Form.Control id="name" type="text" placeholder="Name of the Team" onChange={this.handleChange}/>
                         </Form.Group>
                         <Form.Group as={Col} sm="12" md="6" controlId="formGridState">
                           <Form.Label>Project</Form.Label>
-                          <Form.Control as="select">
+                          {/* <Form.Control as="select">
                             <option>Choose...</option>
                             <option>...</option>
-                          </Form.Control>
+                          </Form.Control> */}
+                          <Input type="select" id="team" onChange={this.handleChange}>
+                              <option>--Choose--</option>
+                            {
+                              this.state.projects.map((project,index)=>{
+                                return (<option key={index} value={project._id}> { project.title } </option>)
+                              })
+                            }
+                            </Input>
                         </Form.Group>
                      </Form.Row>
                            <Form.Text className="text-muted">
                                     Users Listed below are not in any of the teams.
                            </Form.Text><br/> 
                         <Form.Group as={Row} controlId="formGridState">
-                          <Col md="2"> <Form.Check inline label="name-01" type="checkbox" id="01"/> </Col>
-                          <Col md="2"> <Form.Check inline label="name-02" type="checkbox" id="02"/> </Col>
-                          <Col md="2"> <Form.Check inline label="name-03" type="checkbox" id="03"/> </Col>
-                          <Col md="2"> <Form.Check inline label="name-04" type="checkbox" id="04"/> </Col>
-                          <Col md="2"> <Form.Check inline label="name-05" type="checkbox" id="05"/> </Col>
-                          <Col md="2"> <Form.Check inline label="name-06" type="checkbox" id="06"/> </Col>
-                          <Col md="2"> <Form.Check inline label="name-07" type="checkbox" id="07"/> </Col>
-                          <Col md="2"> <Form.Check inline label="name-08" type="checkbox" id="08"/> </Col>
+                          {
+                            this.state.users.map((user,index)=>{
+                              return (<Col md="2"> <Form.Check inline label={user.name} type="checkbox" id={index}/> </Col>)
+                            })
+                          }
                         </Form.Group>
                         
                         <FormGroup row>
                           <Col sm="4"></Col>
                             <Col sm="4" className="column">
-                              <Button type="submit" size="lg" color="success" ><i className="fa fa-dot-circle-o"></i> Create </Button>&nbsp;&nbsp;
+                              <Button type="submit" size="lg" color="success" onClick={this.createHandler}><i className="fa fa-dot-circle-o"></i> Create </Button>&nbsp;&nbsp;
                               <Button type="reset" size="lg" color="danger"><i className="fa fa-ban"></i> Cancel</Button>
 
                             </Col>

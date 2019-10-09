@@ -1,0 +1,9 @@
+.cutomcard{
+   width:18rem;
+}
+
+@media (max-width:360px){
+   .cutomcard{
+      width:100%
+   }
+}

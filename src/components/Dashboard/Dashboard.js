@@ -19,6 +19,7 @@ import navigation from "../../_nav";
 import routes from "../../routes";
 
 import { connect } from "react-redux";
+import { deleteUser } from "../../apis/storage";
 
 // import { logoutAction } from "../../actions/authActions";
 
@@ -29,7 +30,8 @@ export default class Dashboard extends Component {
 
   signOut(e) {
     e.preventDefault();
-    this.props.logoutAction();
+    //this.props.logoutAction();
+    deleteUser()
     console.log("Log Out");
     this.props.history.push("/login");
   }

@@ -1,30 +1,59 @@
 import React, { Component } from "react";
 import { Button } from "reactstrap";
+import Card from 'react-bootstrap/Card';
+import Col from 'react-bootstrap/Col'
+import WorkspaceModal from "../Modals/Workspace/updateWorkspaceModal";
 
-export default class WorkspaceRow extends Component
-{
+export default class WorkspaceRow extends Component{
+
+   componentDidMount(){
+      this.setState({projects:this.props.projectassigned})
+   }
+   state = {
+      showModal:false,
+      projects:[],
+   }
+
+   toggleModel = () => {  
+      const show = !this.state.showModal;
+      this.setState({showModal:show});
+  }
+
+  
+
    render(){
-      let status;
-      let team;
-      let project;
-      if(this.props.name && this.props.teamassigned){
-         team = this.props.teamassigned.name
-         project = this.props.projectassigned.title
-         status = (<label> Assigned </label>)
+      let count;
+      if(this.props.projectassigned.length === 0)
+      {
+        count =   (<label> No Yet Assigned </label>)
       }
       else
       {
-         status = (<label> Unassigned</label>)
+       count =( this.props.projectassigned.map((project,index)=>{
+            return <Card.Title>{index+1}.&nbsp;{project.title}<br/></Card.Title>
+         }))
       }
       return(
-         <tr>
-            <td>{this.props.name}</td>
-            <td>{project}</td>
-            <td>{team}</td>
-            <td>
-              {status}
-            </td>
-         </tr>
+         <Col>
+         <Card className="text-center" border="secondary" style={{ width: '18rem' }}>
+           <Card.Header>{this.props.name}</Card.Header>
+           <Card.Body>
+            <strong><u>Projects Assigned</u><br/></strong>
+             {/* <Card.Title>Secondary Card Title</Card.Title> */}
+             {count}
+           </Card.Body>
+           <Card.Footer>
+              <Button onClick={() => this.toggleModel()}>Update</Button>
+              <WorkspaceModal 
+              id = {this.props.id}
+              name = {this.props.name}
+              show = {this.state.showModal}
+              onHide = {this.toggleModel}
+              changed = {this.props.changed}
+              projects = {this.state.projects}/>
+           </Card.Footer>
+         </Card>
+         </Col>
       )
    }
 }

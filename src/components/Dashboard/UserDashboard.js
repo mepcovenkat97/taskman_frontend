@@ -12,8 +12,30 @@ import Col from 'react-bootstrap/Col'
 import UserNav from "./UserNav"
 import UserProject from "../Project/userproject";
 import UserTask from "../Task/usertask";
+import { getUser } from "../../apis/storage";
+import {getTeam} from "../../apis/team"
 
 export default class UserDashboard extends Component{
+
+  componentDidMount(){
+    this.getAllDetails();
+  }
+  state = {
+    teamname:""
+  }
+
+  async getAllDetails(){
+    try{
+      const user = getUser();
+      const team = await getTeam(user.user.teamid);
+      console.log("Team")
+      
+      this.setState({teamname:team.data.name})
+      console.log(this.state.teamname)
+
+    }
+    catch(e){}
+  }
    render(){
       return(
          <div>
@@ -40,7 +62,7 @@ export default class UserDashboard extends Component{
              <Col sm={9}>
                <Tab.Content>
                  <Tab.Pane eventKey="first">
-                    <label>123</label>
+                    <label><strong>Team Name</strong>:&nbsp;{this.state.teamname}</label>
                  </Tab.Pane>
                  <Tab.Pane eventKey="second">
                    <UserTask/>

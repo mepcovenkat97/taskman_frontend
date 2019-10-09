@@ -29,8 +29,8 @@ export default class App extends React.Component {
         <div className="App">
           <Switch>
             <Route path="/forgotpassword" component={ForgotPassword} />
-            <Route path="/dashboard" component={Dashboard} />
-            <Route path="/userdashboard" component={UserDashboard} />
+            <PrivateRoute path="/dashboard" component={Dashboard} />
+            <PrivateRoute path="/userdashboard" component={UserDashboard} />
             {["/", "/login"].map((path, index) => (
               <Route path={path} component={Login} key={index} />
             ))}

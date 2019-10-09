@@ -2,17 +2,18 @@ import React, { Component } from 'react';
 import {Col, Nav, NavItem, NavLink, TabContent, TabPane} from 'reactstrap';
 import {
    Button,
-   Card,
-   CardBody,
-   CardFooter,
-   CardHeader,
+  //  Card,
+  //  CardBody,
+  //  CardFooter,
+  //  CardHeader,
    FormGroup,
    Table,
    Input,
    Label,
    Row,
  } from 'reactstrap';
- import Form from 'react-bootstrap/Form'
+import Form from 'react-bootstrap/Form'
+import Card from 'react-bootstrap/Card'
 import WorkspaceRow from "../Row/workspace";
 import { getUser } from '../../apis/storage';
 import { addWorkspace }  from '../../apis/workspace';
@@ -39,6 +40,12 @@ class Workspace extends Component{
       //this.handleChange = this.handleChange.bind(this);
     }
 
+    toggleChanged = () =>{
+      const change = !this.state.changed;
+      this.setState({changed:change})
+      this.getWorkspaceDetails()
+   }
+
     componentDidMount = () =>{
       this.getWorkspaceDetails();
     }
@@ -62,19 +69,35 @@ class Workspace extends Component{
     }
 
     createHandler = event =>{
-       let user = getUser()
+      {
+        this.state.workspaces.map((work,index)=>{
+          if(work.name === this.state.name)
+          {
+            alert("Workspace Already Existing")
+          }
+        })
+      }
        this.createWorkspace();
        
     }
 
     async createWorkspace() {
        try{
-          const workspace = {
-            name:this.state.name
+          // const workspace = {
+          //   name:this.state.name
+          // }
+          // console.log(workspace);
+          let formdata = [];
+          formdata.push(encodeURIComponent('name')+'='+encodeURIComponent(this.state.name))
+          formdata = formdata.toString()
+          console.log(formdata)
+          const response = await addWorkspace(formdata);
+          console.log(response.status);
+          if(response.status === 200)
+          {
+            alert("Workspace Created")
+            this.toggleChanged()
           }
-          console.log(workspace);
-          const response = await addWorkspace(workspace);
-          alert("Workspace Created")
        }
        catch(e){
 
@@ -93,11 +116,11 @@ class Workspace extends Component{
              
              <div className="container-fluid">
                <Card className="bg-grey">
-                 <CardHeader className="text-center">
+                 <Card.Header className="text-center">
                    <strong>New Workspace&nbsp;</strong>
                    <small>creation Form</small>
-                 </CardHeader>
-                 <CardBody>
+                 </Card.Header>
+                 <Card.Body>
                  
                  <br/>
                      <Form.Group as={Row} controlId="formPlaintextPassword">
@@ -113,23 +136,6 @@ class Workspace extends Component{
                         )}
                        </Col>
                      </Form.Group>
-                     <Form.Row>
-                        <Form.Group as={Col} sm="12" md="6" controlId="formGridState">
-                          <Form.Label>Project</Form.Label>
-                          <Form.Control as="select">
-                            <option>Choose...</option>
-                            <option>...</option>
-                          </Form.Control>
-                        </Form.Group>
-                        <Form.Group as={Col} sm="12" md="6" controlId="formGridState">
-                          <Form.Label>Team</Form.Label>
-                          <Form.Control as="select">
-                            <option>Choose...</option>
-                            <option>...</option>
-                          </Form.Control>
-                        </Form.Group>
-                     </Form.Row>
-
                      <FormGroup row>
                           <Col sm="4"></Col>
                             <Col sm="4" className="column">
@@ -138,41 +144,21 @@ class Workspace extends Component{
                             </Col>
                      </FormGroup>
                   
-                 </CardBody>
+                 </Card.Body>
                </Card>
                
                </div>
             {/* <CreateCommunityPost changeTab={this.changeTabHandler}/> */}
           </TabPane>
 
-          <TabPane tabId="2">            
-          <Col xs="12" lg="12">
-            <Card sm="6">
-              <CardHeader>
-                 List of Posts posted in Community Page
-              </CardHeader>
-              <CardBody>
-              &nbsp;
-                <Table responsive className="text-center">
-                  <thead className="thead-light">
-                  <tr>
-                    <th>Name</th>
-                    <th>Project Assigned</th>
-                    <th>Team Assigned</th>
-                    <th>Options</th>
-                  </tr>
-                  </thead>
-                  <tbody>
+          <TabPane tabId="2">
+            <Row>          
                   {
                     this.state.workspaces.map((workspace,index)=>{
-                      return <WorkspaceRow name={workspace.name} projectassigned={workspace.projectid} teamassigned={workspace.teamid}/>
+                      return <WorkspaceRow id={workspace._id} name={workspace.name} projectassigned={workspace.projectid} changed ={this.toggleChanged}/>
                     })
                   }
-                  </tbody>
-                </Table>
-              </CardBody>
-            </Card>
-          </Col>
+          </Row>
           </TabPane>
         </>
       );

@@ -1,10 +1,10 @@
 export default {
   items: [
-    {
-      name: "Placeholder",
-      url: "/dashboard",
-      icon: "icon-speedometer"
-    },
+    // {
+    //   name: "Placeholder",
+    //   url: "/dashboard",
+    //   icon: "icon-speedometer"
+    // },
     {
       name: "Workspace",
       url: "/dashboard/workspace",

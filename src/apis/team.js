@@ -11,3 +11,26 @@ export const getAllTeams = async() => {
    })
    return res;
 }
+
+
+export const getTeam = async(id) => {
+   const token = getAuthToken();
+   let res = await axios.get(`${apiUrl}/team/${id}`,{
+      headers:{
+         Authorization:token
+      }
+   })
+   return res;
+}
+
+
+export const addTeam = async (data) => {
+   const token = getAuthToken();
+   let res = await axios.post(`${apiUrl}/team`,data,{
+      headers:{
+         Authorization:token,
+         'Content-Type':"application/x-www-form-urlencoded"
+      }
+   })
+   return res;
+}
