@@ -5,7 +5,7 @@ import { connect } from "react-redux";
 import { loginAction } from "../../actions/authActions";
 
 import auth from "../../apis/auth";
-import { saveUser } from "../../apis/storage";
+import { saveUser, getUser } from "../../apis/storage";
 
 export default class Login extends Component {
   state = {
@@ -101,7 +101,15 @@ export default class Login extends Component {
         </div>
       );
     } else {
-      showLogin = <Redirect to="/dashboard" />;
+      const user = getUser();
+      if(user.user.type == "admin")
+      {
+        showLogin = <Redirect to="/dashboard/workspace" />;
+      }
+      else
+      {
+        showLogin = <Redirect to="/userdashboard" />
+      }
     }
     return <div className="app flex-row align-items-center">{showLogin}</div>;
   }

@@ -203,35 +203,12 @@ class Team extends Component{
           </TabPane>
 
           <TabPane tabId="2">    
-                <Row>
-          {/* <Col xs="12" lg="12">
-            <Card sm="6">
-              <CardHeader>
-                 List of Teams
-              </CardHeader>
-              <CardBody>
-              &nbsp;
-                <Table responsive className="text-center">
-                  <thead className="thead-light">
-                  <tr>
-                    <th>Flag</th>
-                    <th>Name</th>
-                    <th>Project Assigned</th>
-                    <th>Members Count</th>
-                    <th>Options</th>
-                  </tr>
-                  </thead>
-                  <tbody> */}
-                  {
-                    this.state.teams.map((team,index)=>{
-                      return <TeamRow name={team.name} id={team._id} project={team.projectid} user={team.userid} changed ={this.toggleChanged}/>
-                    })
-                  }
-                  {/* </tbody>
-                </Table>
-              </CardBody>
-            </Card>
-          </Col> */}
+            <Row>
+              {
+                this.state.teams.map((team,index)=>{
+                  return <TeamRow name={team.name} id={team._id} project={team.projectid} user={team.userid} changed ={this.toggleChanged}/>
+                })
+              }
             </Row>
           </TabPane>
         </>
