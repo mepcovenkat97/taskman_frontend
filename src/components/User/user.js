@@ -45,17 +45,18 @@ class User extends Component{
                 <Table responsive className="text-center">
                   <thead className="thead-light">
                   <tr>
-                    <th>Flag</th>
+                    <th>Type</th>
                     <th>Name</th>
-                    <th>Project </th>
-                    <th>Team</th>
-                    <th>Options</th>
+                    <th>Email</th>
+                    <th>Task Count</th>
+                    {/* <th>Options</th> */}
                   </tr>
                   </thead>
                   <tbody>
                   {
                      this.state.users.map((user,index)=>{
-                        return <UserRow name={user.name}/>
+                        console.log("User ==> ",user)
+                        return <UserRow type={user.type} name={user.name} email={user.email} task={user.taskid.length}/>
                      })
                   }
                   </tbody>

@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
+import {Select} from "antd";
 import {Col, Nav, NavItem, NavLink, TabContent, TabPane} from 'reactstrap';
+
 import {
    Button,
    Card,
@@ -17,6 +19,8 @@ import TeamRow from "../Row/team";
 import { getAllTeams, addTeam } from '../../apis/team';
 import { getALlProject } from '../../apis/project';
 import { getAllUser } from '../../apis/user';
+
+const { Option } = Select;
 class Team extends Component{
 
    constructor(props) {
@@ -27,7 +31,9 @@ class Team extends Component{
         teams:[],
         projects:[],
         users:[],
+        user:[],
         selected:null,
+        userid:null,
         name:null,
         team:null,
         changed:false
@@ -36,6 +42,14 @@ class Team extends Component{
       this.toggle = this.toggle.bind(this);
       //this.handleChange = this.handleChange.bind(this);
     }
+
+    toggleChanged = () =>{
+      const change = !this.state.changed;
+      this.setState({changed:change})
+      this.getAllTeamDetails()
+      this.getAllProjectDetails()
+      this.getAllUserDetails()
+   }
 
     componentDidMount(){
       this.getAllTeamDetails()
@@ -46,8 +60,9 @@ class Team extends Component{
     async getAllUserDetails(){
       try{
         const res = await getAllUser()
-        const filterres = res.data.filter(data => !data.teamid)
+        const filterres = res.data.filter(data => (!data.teamid))
         this.setState({users:filterres})
+        console.log(this.state.users);
       }
       catch(e){}
     }
@@ -55,10 +70,10 @@ class Team extends Component{
     async getAllProjectDetails(){
       try{
         const res = await getALlProject()
-        console.log(res.data)
-        const filterres = res.data.filter(data => !data.teamid)
+        //console.log(res.data)
+        const filterres = res.data.filter(data => (!data.teamid && !data.userid))
         this.setState({projects:filterres})
-        console.log(this.state.projects)
+       // console.log(this.state.projects)
       }
       catch(e){}
     }
@@ -67,7 +82,7 @@ class Team extends Component{
       try{
         const res = await getAllTeams()
         this.setState({teams:res.data})
-        console.log(this.state.teams)
+        //console.log(this.state.teams)
       }
       catch(e){}
     }
@@ -82,25 +97,44 @@ class Team extends Component{
 
     handleChange = event => {
       event.preventDefault();
+      console.log(event.target.id);
        this.setState({[event.target.id]:event.target.value})
-       console.log(this.state.name, this.state.team)
+       //console.log(this.state.name, this.state.team)
+     }
+
+     updateHandler = event => {
+       event.preventDefault();
+       console.log(event.target.id);
+      this.state.user.push(event.target.value);
+      console.log(this.state.user);
      }
 
      createHandler = event => {
+      this.state.teams.map((project,index)=>{
+        if(project.name === this.state.name)
+        {
+          alert("Team with such name Already Existing")
+        }
+      })
        this.createTeam();
      }
 
      async createTeam(){
        try{
+         console.log(this.state.user);
          let formdata = [];
          formdata.push(encodeURIComponent('name')+'='+encodeURIComponent(this.state.name))
+         formdata.push(encodeURIComponent('userid')+'='+encodeURIComponent(this.state.user))
          formdata.push(encodeURIComponent('projectid')+'='+encodeURIComponent(this.state.team))
          formdata = formdata.join("&")
          const response = await addTeam(formdata);
          alert("Team Created")
+         this.state.changed();
        }
        catch(e){}
      }
+
+    
 
    tabPane() {
       return (
@@ -113,18 +147,29 @@ class Team extends Component{
                    <small>creation Form</small>
                  </CardHeader>
                  <CardBody>
-                     <Form.Row>
-                        <Form.Group as={Col} sm="12" md="6" controlId="formGridState">
+                        <Form.Group controlId="formGridState">
                           <Form.Label>Team Name</Form.Label>
                           <Form.Control id="name" type="text" placeholder="Name of the Team" onChange={this.handleChange}/>
                         </Form.Group>
+                     <Form.Row>
+                        <Form.Group as={Col} sm="12" md="6" controlId="formGridState">
+                          <Form.Label>Users</Form.Label>
+                          <Input type="select" multiple id="userid" onClick={this.updateHandler}>
+                              <option>--Choose--</option>
+                            {
+                              this.state.users.map((project,index)=>{
+                                console.log(project._id);
+                                return (<option key={index} value={project._id}> { project.name } </option>)
+                              })
+                            }
+                            </Input>
+                            <Form.Text className="text-muted">
+                                    Users Listed above are not in any of the teams.
+                           </Form.Text>
+                        </Form.Group>
                         <Form.Group as={Col} sm="12" md="6" controlId="formGridState">
                           <Form.Label>Project</Form.Label>
-                          {/* <Form.Control as="select">
-                            <option>Choose...</option>
-                            <option>...</option>
-                          </Form.Control> */}
-                          <Input type="select" id="team" onChange={this.handleChange}>
+                           <Input type="select" id="team" onChange={this.handleChange}>
                               <option>--Choose--</option>
                             {
                               this.state.projects.map((project,index)=>{
@@ -132,19 +177,15 @@ class Team extends Component{
                               })
                             }
                             </Input>
+                            {/* <Select mode="multiple">
+                            {
+                              this.state.projects.map((project,index)=>{
+                                return (<Option key={index} value={project._id}> { project.title } </Option>)
+                              })
+                            }
+                            </Select> */}
                         </Form.Group>
-                     </Form.Row>
-                           <Form.Text className="text-muted">
-                                    Users Listed below are not in any of the teams.
-                           </Form.Text><br/> 
-                        <Form.Group as={Row} controlId="formGridState">
-                          {
-                            this.state.users.map((user,index)=>{
-                              return (<Col md="2"> <Form.Check inline label={user.name} type="checkbox" id={index}/> </Col>)
-                            })
-                          }
-                        </Form.Group>
-                        
+                     </Form.Row> 
                         <FormGroup row>
                           <Col sm="4"></Col>
                             <Col sm="4" className="column">
@@ -161,8 +202,9 @@ class Team extends Component{
             {/* <CreateCommunityPost changeTab={this.changeTabHandler}/> */}
           </TabPane>
 
-          <TabPane tabId="2">            
-          <Col xs="12" lg="12">
+          <TabPane tabId="2">    
+                <Row>
+          {/* <Col xs="12" lg="12">
             <Card sm="6">
               <CardHeader>
                  List of Teams
@@ -179,17 +221,18 @@ class Team extends Component{
                     <th>Options</th>
                   </tr>
                   </thead>
-                  <tbody>
+                  <tbody> */}
                   {
                     this.state.teams.map((team,index)=>{
-                      return <TeamRow name={team.name} project={team.projectid} user={team.userid}/>
+                      return <TeamRow name={team.name} id={team._id} project={team.projectid} user={team.userid} changed ={this.toggleChanged}/>
                     })
                   }
-                  </tbody>
+                  {/* </tbody>
                 </Table>
               </CardBody>
             </Card>
-          </Col>
+          </Col> */}
+            </Row>
           </TabPane>
         </>
       );

@@ -54,9 +54,6 @@ export default class UserDashboard extends Component{
                  <Nav.Item>
                    <Nav.Link eventKey="second">Task</Nav.Link>
                  </Nav.Item>
-                 <Nav.Item>
-                   <Nav.Link eventKey="third">Project</Nav.Link>
-                 </Nav.Item>
                </Nav>
              </Col>
              <Col sm={9}>
@@ -66,9 +63,6 @@ export default class UserDashboard extends Component{
                  </Tab.Pane>
                  <Tab.Pane eventKey="second">
                    <UserTask/>
-                 </Tab.Pane>
-                 <Tab.Pane eventKey="third">
-                    <UserProject />
                  </Tab.Pane>
                </Tab.Content>
              </Col>

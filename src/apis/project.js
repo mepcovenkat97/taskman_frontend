@@ -12,6 +12,16 @@ export const getALlProject = async() => {
    return res;
 }
 
+export const getProjectById = async(id) => {
+   const token = getAuthToken();
+   let res = await axios.get(`${apiUrl}/project/${id}`,{
+      headers:{
+         Authorization:token
+      }
+   })
+   return res;
+}
+
 export const addProject = async data =>{
    const token = getAuthToken();
    console.log("Inside API Call")

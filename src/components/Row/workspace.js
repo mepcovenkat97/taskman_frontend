@@ -42,8 +42,8 @@ export default class WorkspaceRow extends Component{
              {/* <Card.Title>Secondary Card Title</Card.Title> */}
              {count}
            </Card.Body>
-           <Card.Footer>
-              <Button onClick={() => this.toggleModel()}>Update</Button>
+           {/* <Card.Footer>
+              <Button onClick={() => this.toggleModel()}>View</Button>
               <WorkspaceModal 
               id = {this.props.id}
               name = {this.props.name}
@@ -51,7 +51,7 @@ export default class WorkspaceRow extends Component{
               onHide = {this.toggleModel}
               changed = {this.props.changed}
               projects = {this.state.projects}/>
-           </Card.Footer>
+           </Card.Footer> */}
          </Card>
          </Col>
       )

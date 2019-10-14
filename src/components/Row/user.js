@@ -5,11 +5,11 @@ export default class UserRow extends Component{
    render(){
       return(
          <tr>
-            <td></td>
+            <td>{this.props.type}</td>
             <td>{this.props.name}</td>
-            <td></td>
-            <td></td>
-            <td><Button>Update</Button></td>
+            <td>{this.props.email}</td>
+            <td>{this.props.task}</td>
+            {/* <td><Button>Update</Button></td> */}
          </tr>
       )
    }

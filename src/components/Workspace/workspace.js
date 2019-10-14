@@ -139,8 +139,8 @@ class Workspace extends Component{
                      <FormGroup row>
                           <Col sm="4"></Col>
                             <Col sm="4" className="column">
-                              <Button type="submit" size="lg" color="success" onClick={this.createHandler}><i className="fa fa-dot-circle-o"></i> Create </Button>&nbsp;&nbsp;
-                              <Button type="reset" size="lg" color="danger"><i className="fa fa-ban"></i> Cancel</Button>
+                              <Button type="submit" size="xs" color="success" onClick={this.createHandler}><i className="fa fa-dot-circle-o"></i> Create </Button>&nbsp;&nbsp;
+                              <Button type="reset" size="xs" color="danger"><i className="fa fa-ban"></i> Cancel</Button>
                             </Col>
                      </FormGroup>
                   

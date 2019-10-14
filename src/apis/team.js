@@ -34,3 +34,14 @@ export const addTeam = async (data) => {
    })
    return res;
 }
+
+export const updateTeam = async (id,data) => {
+   const token = getAuthToken();
+   let res = await axios.put(`${apiUrl}/team/${id}`,data,{
+      headers:{
+         Authorization:token,
+         'Content-Type':"application/x-www-form-urlencoded"
+      }
+   })
+   return res;
+}

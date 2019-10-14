@@ -15,15 +15,16 @@ import {
  import Form from 'react-bootstrap/Form'
 import { getAllTask, addTask } from '../../apis/task';
 import TaskRow from "../Row/task";
-import { getALlProject } from '../../apis/project';
-import { getAllUser } from '../../apis/user';
+import { getALlProject, getProjectById } from '../../apis/project';
+import { getAllUser, getUserById } from '../../apis/user';
+import { getTeam } from '../../apis/team';
 class Task extends Component{
 
    constructor(props) {
       super(props);
       this.state = {
         activeTab: new Array(2).fill('1'),
-        file:null,
+        flag:0,
         tasks:[],
         projects:[],
         users:[],
@@ -31,22 +32,31 @@ class Task extends Component{
         name:null,
         projectid:null,
         userid:null,
-        priority:null
+        onlyuser:null,
+        getteamusers:[],
+        priority:null,
       };
 
       this.toggle = this.toggle.bind(this);
       //this.handleChange = this.handleChange.bind(this);
     }
 
+    toggleChanged = () =>{
+      const change = !this.state.changed;
+      this.setState({changed:change})
+      this.getAllTaskDetail()
+      this.getAllProjectDetails()
+   }
+
     componentDidMount = () => {
       this.getAllTaskDetail()
       this.getAllProjectDetails()
-      this.getAllUserDetails()
+      //this.getAllUserDetails()
     }
 
     async getAllUserDetails(){
       try{
-        const res = await getAllUser()
+        const res = await getAllUser();
         this.setState({users:res.data})
 
       }
@@ -56,8 +66,17 @@ class Task extends Component{
     async getAllProjectDetails(){
       try{
         const res = await getALlProject()
+        res.data.map((item)=>{
+          if(item.teamid)
+          {
+           // console.log("Project ==>",item.teamid.userid)
+          }
+          else
+          {
+            //console.log("Project ==>",item.userid._id);
+          }
+        })
         this.setState({projects:res.data})
-        console.log(this.state.projects)
       }
       catch(e){}
     }
@@ -66,7 +85,6 @@ class Task extends Component{
       try{
         const res = await getAllTask()
         this.setState({tasks:res.data});
-        console.log(this.state.tasks)
       }
       catch(e){}
     }
@@ -80,6 +98,12 @@ class Task extends Component{
     }
 
     createHandler = event => {
+      this.state.tasks.map((project,index)=>{
+        if(project.name === this.state.name)
+        {
+          alert("Task with such name Already Existing")
+        }
+      })
       this.createTask();
     }
 
@@ -89,22 +113,82 @@ class Task extends Component{
         formdata.push(encodeURIComponent("name")+'='+encodeURIComponent(this.state.name))
         formdata.push(encodeURIComponent("projectid")+'='+encodeURIComponent(this.state.projectid))
         formdata.push(encodeURIComponent('userid')+'='+encodeURIComponent(this.state.userid))
-       // formdata.push(encodeURIComponent('priority')+'='+encodeURIComponent(this.state.priority))
+        formdata.push(encodeURIComponent('priority')+'='+encodeURIComponent(this.state.priority))
         formdata = formdata.join("&")
 
         const response = await addTask(formdata);
         alert("Task Created");
+        this.state.changed()
+      }
+      catch(e){}
+    }
+
+    handleProjectChange = event => {
+      event.preventDefault();
+      // console.log(event.target.value)
+      this.setState({onlyuser:null,getteamusers:[]})
+      this.setState({projectid:event.target.value})
+      console.log(event.target.value)
+      this.getProject(event.target.value);
+    }
+
+    async getProject(id)
+    {
+      try{
+        const res = await getProjectById(id);
+        //console.log("DAta=>",res.data)
+        if(res.data.userid)
+        {
+          const user = await getUserById(res.data.userid._id)
+          this.setState({onlyuser:user.data.name});
+          this.setState({flag:1});
+
+        }
+        else if(res.data.teamid)
+        {
+          const team = await getTeam(res.data.teamid);
+           team.data.userid.map(async (id,index)=>{
+              const temp = await getUserById(id);
+              this.state.getteamusers.push(temp.data);
+              this.setState({flag:1})
+              //console.log(this.state.getteamusers)
+          })
+        }
       }
       catch(e){}
     }
 
     handleChange = event => {
       event.preventDefault();
+      console.log(event.target.value)
       this.setState({[event.target.id]:event.target.value})
-      console.log(this.state.selected)
+      console.log(this.state.priority)
     }
 
    tabPane() {
+    let user;
+     if(this.state.flag == 1)
+     {
+    
+     if(this.state.onlyuser)
+     {
+       user = (<label>{this.state.onlyuser.name}</label>)
+     }
+     else
+     {
+       user = (
+        <Input type="select" id="userid" onChange={this.handleChange}>
+          <option>--Choose--</option>
+          {
+            this.state.getteamusers.map((user,index)=>{
+              console.log(user);
+              return (<option key={index} value={user._id}> { user.name } </option>)
+            })
+          }
+        </Input>
+       )
+     }
+    }
       return (
         <>
           <TabPane tabId="1">
@@ -122,17 +206,14 @@ class Task extends Component{
                         </Form.Group>
                         <Form.Group as={Col} sm="12" md="6" controlId="formGridState">
                           <Form.Label>Project</Form.Label>
-                          {/* <Form.Control as="select">
-                            <option>Choose...</option>
-                            <option>...</option>
-                          </Form.Control> */}
-                          <Input type="select" id="projectid" onChange={this.handleChange}>
+                          <Input type="select" id="projectid" onChange={this.handleProjectChange}>
                               <option>--Choose--</option>
-                            {
-                              this.state.projects.map((project,index)=>{
-                                return (<option key={index} value={project._id}> { project.title } </option>)
-                              })
-                            }
+                              {
+                                this.state.projects.map((project,index)=>{
+                                  //console.log("Project ID==>",project._id);
+                                  return (<option key={index} value={project._id}> { project.title } </option>)
+                                })
+                              }
                             </Input>
                         </Form.Group>
                      </Form.Row>
@@ -140,28 +221,11 @@ class Task extends Component{
                         <Form.Group as={Row} controlId="formGridState">
                           <Form.Label column sm="2">Assign To</Form.Label>
                           <Col sm="4">
-                          <Input type="select" id="userid" onChange={this.handleChange}>
-                              <option>--Choose--</option>
-                            {
-                              this.state.users.map((user,index)=>{
-                                return (<option key={index} value={user._id}> { user.name } </option>)
-                              })
-                            }
-                            </Input>
+                            {user}
                           </Col>
                           <Form.Label column sm="2">Priority</Form.Label>
                           <Col sm="4">
-                              <Form.Check inline name="radio" label="1" type="radio" id="01"/>
-                              <Form.Check inline name="radio" label="2" type="radio" id="02"/>
-                              <Form.Check inline name="radio" label="3" type="radio" id="03"/>
-                              <Form.Check inline name="radio" label="4" type="radio" id="04"/>
-                              <Form.Check inline name="radio" label="5" type="radio" id="05"/>
-                              <Form.Check inline name="radio" label="6" type="radio" id="06"/>
-                              <Form.Check inline name="radio" label="7" type="radio" id="07"/>
-                              <Form.Check inline name="radio" label="8" type="radio" id="08"/>
-                              <Form.Check inline name="radio" label="9" type="radio" id="09"/>
-                              <Form.Check inline name="radio" label="10" type="radio" id="10"/> 
-                              {/* <Input type="range" min="1" max="10" class="slider" id="myRange" /> */}
+                              <Input type="number" id="priority" min="1" max="10" id="priority" onChange={this.handleChange}/>
                           </Col>
                         </Form.Group>  
                         
@@ -170,7 +234,6 @@ class Task extends Component{
                             <Col sm="4" className="column">
                               <Button type="submit" size="lg" color="success" onClick={this.createHandler}><i className="fa fa-dot-circle-o"></i> Create </Button>&nbsp;&nbsp;
                               <Button type="reset" size="lg" color="danger"><i className="fa fa-ban"></i> Cancel</Button>
-
                             </Col>
                         </FormGroup>
                   
@@ -192,18 +255,20 @@ class Task extends Component{
                 <Table responsive className="text-center">
                   <thead className="thead-light">
                   <tr>
-                    <th>Flag</th>
+                    <th>Status</th>
                     <th>Name</th>
                     <th>Project </th>
                     <th>Assigned To</th>
-                    <th>Status</th>
+                    <th>Priority</th>
+                    <th>Messages</th>
                     <th>Options</th>
                   </tr>
                   </thead>
                   <tbody>
                   {
-                    this.state.tasks.map((task,index) => {
-                      return <TaskRow name={task.name} project={task.projectid} assignedto={task.userid}/>
+                    this.state.tasks.map((task,index) =>{
+                      console.log("Task ==>",task.projectid)
+                      return <TaskRow name={task.name} message={task.messageid} project={task.projectid} assignedto={task.userid} status={task.status} id={task._id} priority={task.priority} changed ={this.toggleChanged}/>
                     })
                   }
                   </tbody>

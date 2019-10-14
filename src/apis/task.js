@@ -12,6 +12,16 @@ export const getAllTask = async() => {
    return res;
 }
 
+export const getTaskById = async(id) => {
+   const token = getAuthToken();
+   let res = await axios.get(`${apiUrl}/task/${id}`,{
+      headers:{
+         Authorization:token
+      }
+   })
+   return res;
+}
+
 export const addTask = async (data) => {
    const token = getAuthToken();
    let res = await axios.post(`${apiUrl}/task`,data,{

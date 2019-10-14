@@ -1,6 +1,9 @@
 import React, { Component } from "react";
 import Button from "react-bootstrap/Button"
 import ProjectModal from "../Modals/Project/updateProjectModal";
+import Badge from 'react-bootstrap/Badge'
+
+
 export default class ProjectRow extends Component{
 
    state = {
@@ -13,9 +16,22 @@ export default class ProjectRow extends Component{
    }
 
    render(){
+      let statusflag;
+      if(this.props.status == "incomplete")
+      {
+         statusflag = (<Badge variant="danger">incomplete</Badge>)
+      }
+      else if(this.props.status == "on Going")
+      {
+         statusflag = (<Badge variant="success">On Going</Badge>)
+      }
+      else if(this.props.status == "not Started")
+      {
+         statusflag = (<Badge variant="secondary">Not Started</Badge>)
+      }
       return(
          <tr>
-            <td></td>
+            <td>{statusflag}</td>
             <td>{this.props.title}</td>
             <td>{this.props.workspace}</td>
             <td>{this.props.team}</td>
@@ -30,7 +46,8 @@ export default class ProjectRow extends Component{
                teamid = {this.props.teamid}
                startdate = {this.props.startdate}
                enddate = {this.props.enddate}
-               show = {this.state.showModal} 
+               show = {this.state.showModal}
+               changed = {this.props.changed}
                onHide = {this.toggleModel}
             />
          </tr>

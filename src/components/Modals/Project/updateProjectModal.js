@@ -8,17 +8,29 @@ import DropdownButton from 'react-bootstrap/DropdownButton'
 import Form from 'react-bootstrap/Form'
 import { getAllTeams } from '../../../apis/team';
 import { updateProject } from '../../../apis/project';
+import { getAllUser } from '../../../apis/user';
 
 export default class ProjectModal extends Component{
 
    state = {
       teams:[],
+      users:[],
       enddate:this.props.enddate,
       teamid:this.props.teamid
    }
 
    componentDidMount(){
       this.getTeamDetails()
+      this.getAllUserDetails()
+   }
+
+   async getAllUserDetails(){
+      try{
+         const res = await getAllUser();
+         const filterres = res.data.filter(data => (data.name!==this.props.team))
+         this.setState({users:filterres});
+      }
+      catch(e){}
    }
 
    async getTeamDetails(){
@@ -47,15 +59,52 @@ export default class ProjectModal extends Component{
    {
       try{
          let formdata = [];
-         formdata.push(encodeURIComponent("teamid")+'='+encodeURIComponent(this.state.teamid))
-         formdata.push(encodeURIComponent("enddate")+'='+encodeURIComponent(this.state.enddate))
-         formdata = formdata.join("&");
-         const res = await updateProject(this.props.id,formdata)
+         if(!this.state.teamid)
+         {
+            formdata.push(encodeURIComponent("enddate")+'='+encodeURIComponent(this.state.enddate))
+            formdata = formdata.toString();
+            const res = await updateProject(this.props.id,formdata)
+            if(res.status === 200)
+            {
+               alert("Data Modified Successfully");
+               this.props.changed()
+               this.props.onHide()
+            }
+         }
+         else
+         {
+            formdata.push(encodeURIComponent("teamid")+'='+encodeURIComponent(this.state.teamid))
+            formdata.push(encodeURIComponent("enddate")+'='+encodeURIComponent(this.state.enddate))
+            formdata = formdata.join("&");
+            const res = await updateProject(this.props.id,formdata)
+            if(res.status === 200)
+            {
+               alert("Data Modified Successfully");
+               this.props.changed()
+               this.props.onHide()
+            }
+         }
       }
       catch(e){}
    }
 
    render(){
+      let unteam;
+      if(this.props.team == "Unassigned")
+      {
+         unteam = (<Input type="select" id="teamid" >
+          <option value="1">{this.props.team}</option>
+         {
+           this.state.teams.map((project,index)=>{
+             return (<option key={index} value={project._id}> { project.name } </option>)
+           })
+         } 
+         </Input>)
+      }
+      else
+      {
+         unteam = (<Input type="text" id="teamid" value={this.props.team} disabled></Input>)
+      }
       return(
          <>
          <Modal   
@@ -91,18 +140,11 @@ export default class ProjectModal extends Component{
               </Form.Group>
               <Form.Group as={Row} controlId="formPlaintextPassword">
                 <Form.Label column sm="3">
-                  Team Assigned
+                  Assigned To
                 </Form.Label>
                 <Col sm="9">
                     <Form.Group controlId="exampleForm.ControlSelect1">
-                    <Input type="select" id="teamid" onChange={this.handleChange}>
-                        <option value="1">{this.props.team}</option>
-                        {
-                          this.state.teams.map((project,index)=>{
-                            return (<option key={index} value={project._id}> { project.name } </option>)
-                          })
-                        }
-                        </Input>
+                    {unteam}
                     </Form.Group>
                 </Col>
               </Form.Group>

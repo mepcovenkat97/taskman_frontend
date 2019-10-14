@@ -38,24 +38,24 @@ export default class WorkspaceModal extends Component{
        console.log("Selected"+this.state.selected)
      }
 
-     updateHandler = event => {
-        event.preventDefault();
-        this.updateWorkspaceDetails()
-     }
+    //  updateHandler = event => {
+    //     event.preventDefault();
+    //     this.updateWorkspaceDetails()
+    //  }
 
-     async updateWorkspaceDetails()
-     {
-        try{
-           let formdata = [];
-           formdata.push(encodeURIComponent('projectid')+'='+encodeURIComponent(this.state.selected))
-           formdata = formdata.toString();
-           const res = await updateWorkspace(this.props.id,formdata);
-           alert("Data Added Successfully");
-           this.props.changed()
-           this.props.onHide()
-        }
-        catch(e){}
-     }
+    //  async updateWorkspaceDetails()
+    //  {
+    //     try{
+    //        let formdata = [];
+    //        formdata.push(encodeURIComponent('projectid')+'='+encodeURIComponent(this.state.selected))
+    //        formdata = formdata.toString();
+    //        const res = await updateWorkspace(this.props.id,formdata);
+    //        alert("Data Added Successfully");
+    //        this.props.changed()
+    //        this.props.onHide()
+    //     }
+    //     catch(e){}
+    //  }
 
    render(){
       console.log(this.props.projects)
@@ -80,7 +80,7 @@ export default class WorkspaceModal extends Component{
                   })
                }
 
-               <Form>
+               {/* <Form>
                   <Form.Group as={Row} controlId="formPlaintextPassword">
                     <Form.Label column sm="2">
                       Projects
@@ -99,7 +99,7 @@ export default class WorkspaceModal extends Component{
                     </Col>
                   </Form.Group>
                   <Button type="submit" onClick={this.updateHandler}>Add Project</Button>
-               </Form>
+               </Form> */}
                </Modal.Body>
                <Modal.Footer>
                  <Button onClick={this.props.onHide}>Close</Button>
