@@ -82,17 +82,12 @@ class Workspace extends Component{
     }
 
     async createWorkspace() {
-       try{
-          // const workspace = {
-          //   name:this.state.name
-          // }
-          // console.log(workspace);
+       try
+       {
           let formdata = [];
           formdata.push(encodeURIComponent('name')+'='+encodeURIComponent(this.state.name))
           formdata = formdata.toString()
-          console.log(formdata)
           const response = await addWorkspace(formdata);
-          console.log(response.status);
           if(response.status === 200)
           {
             alert("Workspace Created")

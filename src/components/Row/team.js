@@ -42,6 +42,8 @@ export default class TeamRow extends Component{
               <Button onClick={() => this.toggleModel()}>Add Team Members</Button>
               <TeamModal 
               id = {this.props.id}
+              project = {this.props.project}
+              user = {this.props.user}
               name = {this.props.name}
               show = {this.state.showModal}
               onHide = {this.toggleModel}

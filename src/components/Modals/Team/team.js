@@ -68,6 +68,20 @@ export default class TeamModal extends Component
                  </Modal.Title>
                </Modal.Header>
                <Modal.Body>
+                  <label><strong>Projects Assigned</strong></label><br/>
+                  {
+                     this.props.project.map((pro,index)=>{
+                        return <label>{index+1}.&nbsp;{pro.title}<br/></label>
+                     })
+                  }
+                  <br/>
+                  <label><strong>Team Members</strong></label><br/>
+                  {
+                     this.props.user.map((pro,index)=>{
+                        return <><label>{index+1}.&nbsp;{pro.name}</label><br/></>
+                     })
+                  }
+                  <hr/>
                   <Form.Row>
                      <Form.Group as={Col} sm="12" md="12" controlId="formGridState">
                        <Form.Label>Users</Form.Label>

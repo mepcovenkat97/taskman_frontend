@@ -35,6 +35,8 @@ class Task extends Component{
         onlyuser:null,
         getteamusers:[],
         priority:null,
+        startdate:null,
+        enddate:null,
       };
 
       this.toggle = this.toggle.bind(this);
@@ -66,16 +68,6 @@ class Task extends Component{
     async getAllProjectDetails(){
       try{
         const res = await getALlProject()
-        res.data.map((item)=>{
-          if(item.teamid)
-          {
-           // console.log("Project ==>",item.teamid.userid)
-          }
-          else
-          {
-            //console.log("Project ==>",item.userid._id);
-          }
-        })
         this.setState({projects:res.data})
       }
       catch(e){}
@@ -104,7 +96,25 @@ class Task extends Component{
           alert("Task with such name Already Existing")
         }
       })
+      let flag = 0;
+      if(new Date(this.state.startdate) < new Date(Date.now()))
+      {
+        alert("Start Date should be greater than current date");
+        flag = 1;
+      }
+      if(new Date(this.state.enddate) < new Date(Date.now()))
+      {
+        alert("Due Date should be greater than current date");
+        flag = 1;
+      }
+      if(new Date(this.state.enddate) <= new Date(this.state.startdate))
+      {
+        alert("Due Date should be greater than start date");
+        flag = 1;
+      }
+      if(flag == 0){
       this.createTask();
+      }
     }
 
     async createTask(){
@@ -114,11 +124,16 @@ class Task extends Component{
         formdata.push(encodeURIComponent("projectid")+'='+encodeURIComponent(this.state.projectid))
         formdata.push(encodeURIComponent('userid')+'='+encodeURIComponent(this.state.userid))
         formdata.push(encodeURIComponent('priority')+'='+encodeURIComponent(this.state.priority))
+        formdata.push(encodeURIComponent('startdate')+'='+encodeURIComponent(this.state.startdate))
+        formdata.push(encodeURIComponent('enddate')+'='+encodeURIComponent(this.state.enddate))
         formdata = formdata.join("&")
 
         const response = await addTask(formdata);
-        alert("Task Created");
-        this.state.changed()
+        if(response.status === 200)
+        {
+          alert("Task Created");
+          this.toggleChanged()
+        }
       }
       catch(e){}
     }
@@ -218,22 +233,45 @@ class Task extends Component{
                         </Form.Group>
                      </Form.Row>
                         
-                        <Form.Group as={Row} controlId="formGridState">
-                          <Form.Label column sm="2">Assign To</Form.Label>
+                        {/* <Form.Group as={Row} controlId="formGridState">
+                          <Form.Label>Assign To</Form.Label>
                           <Col sm="4">
                             {user}
                           </Col>
-                          <Form.Label column sm="2">Priority</Form.Label>
+                          <Form.Label>Priority</Form.Label>
                           <Col sm="4">
                               <Input type="number" id="priority" min="1" max="10" id="priority" onChange={this.handleChange}/>
                           </Col>
-                        </Form.Group>  
-                        
+                        </Form.Group>  */}
+
+                        <Form.Row>        
+                            <Form.Group as={Col} sm="12" md="6" controlId="formGridState">
+                              <Form.Label>Assign To</Form.Label>
+                              {/* <Form.Control id="startdate" type="Date" onChange={this.handleChange}/> */}
+                              {user}
+                            </Form.Group>
+                            <Form.Group as={Col} sm="12" md="6" controlId="formGridState">
+                              <Form.Label>Priority</Form.Label>
+                              <Input type="number" id="priority" min="1" max="10" id="priority" onChange={this.handleChange}/>
+                            </Form.Group>
+                        </Form.Row>
+
+
+                        <Form.Row>        
+                        <Form.Group as={Col} sm="12" md="6" controlId="formGridState">
+                          <Form.Label>Start Date</Form.Label>
+                          <Form.Control id="startdate" type="Date" onChange={this.handleChange}/>
+                        </Form.Group>
+                        <Form.Group as={Col} sm="12" md="6" controlId="formGridState">
+                          <Form.Label>Due Date</Form.Label>
+                          <Form.Control id="enddate" type="Date" onChange={this.handleChange}/>
+                        </Form.Group>
+                     </Form.Row>
                         <FormGroup row>
                           <Col sm="4"></Col>
                             <Col sm="4" className="column">
-                              <Button type="submit" size="lg" color="success" onClick={this.createHandler}><i className="fa fa-dot-circle-o"></i> Create </Button>&nbsp;&nbsp;
-                              <Button type="reset" size="lg" color="danger"><i className="fa fa-ban"></i> Cancel</Button>
+                              <Button type="submit" size="xs" color="success" onClick={this.createHandler}><i className="fa fa-dot-circle-o"></i> Create </Button>&nbsp;&nbsp;
+                              <Button type="reset" size="xs" color="danger"><i className="fa fa-ban"></i> Cancel</Button>
                             </Col>
                         </FormGroup>
                   
@@ -259,6 +297,8 @@ class Task extends Component{
                     <th>Name</th>
                     <th>Project </th>
                     <th>Assigned To</th>
+                    <th>Start Date</th>
+                    <th>End Date</th>
                     <th>Priority</th>
                     <th>Messages</th>
                     <th>Options</th>
@@ -267,8 +307,8 @@ class Task extends Component{
                   <tbody>
                   {
                     this.state.tasks.map((task,index) =>{
-                      console.log("Task ==>",task.projectid)
-                      return <TaskRow name={task.name} message={task.messageid} project={task.projectid} assignedto={task.userid} status={task.status} id={task._id} priority={task.priority} changed ={this.toggleChanged}/>
+                      console.log("Task ==>",task)
+                      return <TaskRow name={task.name} message={task.messageid} project={task.projectid} assignedto={task.userid} status={task.status} id={task._id} priority={task.priority} changed ={this.toggleChanged} startdate={task.startdate} enddate={task.enddate}/>
                     })
                   }
                   </tbody>

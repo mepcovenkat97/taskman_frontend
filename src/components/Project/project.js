@@ -114,7 +114,25 @@ class Project extends Component{
           }
         })
       }
-      this.createProjects();
+      let flag = 0;
+      if(new Date(this.state.startdate) < new Date(Date.now()))
+      {
+        alert("Start Date should be greater than current date");
+        flag = 1;
+      }
+      if(new Date(this.state.enddate) < new Date(Date.now()))
+      {
+        alert("Due Date should be greater than current date");
+        flag = 1;
+      }
+      if(new Date(this.state.enddate) <= new Date(this.state.startdate))
+      {
+        alert("Due Date should be greater than start date");
+        flag = 1;
+      }
+      if(flag == 0){
+        this.createProjects();
+      }
     }
 
     async createProjects(){
@@ -130,7 +148,11 @@ class Project extends Component{
           formdata = formdata.join("&")
           console.log(formdata)
           const response = await addProject(formdata);
-          alert("Project Created")
+          if(response.status === 201)
+          {
+            alert("Project Created")
+            this.toggleChanged()
+          }
         }
         else if(this.state.userid)
         {
@@ -143,7 +165,11 @@ class Project extends Component{
           formdata = formdata.join("&")
           console.log(formdata)
           const response = await addProject(formdata);
-          alert("Project Created")
+          if(response.status === 201)
+          {
+            alert("Project Created")
+            this.toggleChanged()
+          }
         }
         else if(!this.state.teamid && !this.state.userid)
         {
@@ -154,7 +180,7 @@ class Project extends Component{
           formdata = formdata.join("&")
           console.log(formdata)
           const response = await addProject(formdata);
-          if(response.status === 200)
+          if(response.status === 201)
           {
             alert("Project Created")
             this.toggleChanged()
@@ -294,6 +320,8 @@ class Project extends Component{
                         changed ={this.toggleChanged} 
                         id={project._id} 
                         title={project.title} 
+                        teams={this.state.teams}
+                        users={this.state.users}
                         startdate={project.startdate.slice(0,10)} 
                         enddate={project.enddate.slice(0,10)} 
                         workspace={project.workspaceid.name} 
@@ -308,6 +336,8 @@ class Project extends Component{
                         changed ={this.toggleChanged}
                         id={project._id} 
                         title={project.title} 
+                        teams={this.state.teams}
+                        users={this.state.users}
                         startdate={project.startdate.slice(0,10)} 
                         enddate={project.enddate.slice(0,10)} 
                         workspace={project.workspaceid.name} 
@@ -320,6 +350,8 @@ class Project extends Component{
                               id={project._id} 
                               changed ={this.toggleChanged}
                               title={project.title} 
+                              teams={this.state.teams}
+                              users={this.state.users}
                               startdate={project.startdate.slice(0,10)} 
                               enddate={project.enddate.slice(0,10)} 
                               workspace={project.workspaceid.name} 

@@ -6,6 +6,11 @@ import Col from 'react-bootstrap/Col'
 import Row from 'react-bootstrap/Row'
 import DropdownButton from 'react-bootstrap/DropdownButton'
 import Form from 'react-bootstrap/Form'
+import Tabs from 'react-bootstrap/Tabs'
+import Tab from 'react-bootstrap/Tab'
+
+import TabContainer from 'react-bootstrap/TabContainer'
+import Nav from 'react-bootstrap/Nav'
 import { getAllTeams } from '../../../apis/team';
 import { updateProject } from '../../../apis/project';
 import { getAllUser } from '../../../apis/user';
@@ -15,6 +20,8 @@ export default class ProjectModal extends Component{
    state = {
       teams:[],
       users:[],
+      selected:null,
+      whomselect:null,
       enddate:this.props.enddate,
       teamid:this.props.teamid
    }
@@ -50,6 +57,18 @@ export default class ProjectModal extends Component{
        //console.log(this.state.name, this.state.team)
      }
 
+   handleTeamChange = event =>{
+      event.preventDefault();
+      console.log(event.target.value);
+      this.setState({selected:event.target.value,whomselect:"team"});
+   }
+
+   handleUserChange = event =>{
+      event.preventDefault();
+      console.log(event.target.value);
+      this.setState({selected:event.target.value,whomselect:"user"});
+   }
+
    updateHandler = event => {
       event.preventDefault();
       this.updateProjectDetails();
@@ -59,8 +78,34 @@ export default class ProjectModal extends Component{
    {
       try{
          let formdata = [];
-         if(!this.state.teamid)
+         // if(this.state.team == "Unassigned")
+         // {
+         //    formdata.push(encodeURIComponent("enddate")+'='+encodeURIComponent(this.state.enddate))
+         //    formdata = formdata.toString();
+         //    const res = await updateProject(this.props.id,formdata)
+         //    if(res.status === 200)
+         //    {
+         //       alert("Data Modified Successfully");
+         //       this.props.changed()
+         //       this.props.onHide()
+         //    }
+         // }
+         // else
+         // {
+         //    formdata.push(encodeURIComponent("teamid")+'='+encodeURIComponent(this.state.teamid))
+         //    formdata.push(encodeURIComponent("enddate")+'='+encodeURIComponent(this.state.enddate))
+         //    formdata = formdata.join("&");
+         //    const res = await updateProject(this.props.id,formdata)
+         //    if(res.status === 200)
+         //    {
+         //       alert("Data Modified Successfully");
+         //       this.props.changed()
+         //       this.props.onHide()
+         //    }
+         // }
+         if(this.state.whomselect == null)
          {
+            //formdata.push(encodeURIComponent("teamid")+'='+encodeURIComponent(this.state.teamid))
             formdata.push(encodeURIComponent("enddate")+'='+encodeURIComponent(this.state.enddate))
             formdata = formdata.toString();
             const res = await updateProject(this.props.id,formdata)
@@ -71,9 +116,22 @@ export default class ProjectModal extends Component{
                this.props.onHide()
             }
          }
-         else
+         else if(this.state.whomselect == "user")
          {
-            formdata.push(encodeURIComponent("teamid")+'='+encodeURIComponent(this.state.teamid))
+            formdata.push(encodeURIComponent("userid")+'='+encodeURIComponent(this.state.selected))
+            formdata.push(encodeURIComponent("enddate")+'='+encodeURIComponent(this.state.enddate))
+            formdata = formdata.join("&");
+            const res = await updateProject(this.props.id,formdata)
+            if(res.status === 200)
+            {
+               alert("Data Modified Successfully");
+               this.props.changed()
+               this.props.onHide()
+            }
+         }
+         else if(this.state.whomselect == "team")
+         {
+            formdata.push(encodeURIComponent("teamid")+'='+encodeURIComponent(this.state.selected))
             formdata.push(encodeURIComponent("enddate")+'='+encodeURIComponent(this.state.enddate))
             formdata = formdata.join("&");
             const res = await updateProject(this.props.id,formdata)
@@ -89,22 +147,61 @@ export default class ProjectModal extends Component{
    }
 
    render(){
-      let unteam;
+      let teamselection = (
+         <Input type="select" id="teamid" onChange={this.handleTeamChange}>
+            <option>--Choose--</option>
+          {
+            this.props.teams.map((team,index)=>{
+              return (<option key={index} value={team._id}> { team.name } </option>)
+            })
+          }
+          </Input>
+      );
+      let userselection = (
+         <Input type="select" id="userid" onChange={this.handleUserChange}>
+            <option>--Choose--</option>
+          {
+            this.props.users.map((team,index)=>{
+              return (<option key={index} value={team._id}> { team.name } </option>)
+            })
+          }
+          </Input>
+      );
+      let selectteam;
       if(this.props.team == "Unassigned")
       {
-         unteam = (<Input type="select" id="teamid" >
-          <option value="1">{this.props.team}</option>
-         {
-           this.state.teams.map((project,index)=>{
-             return (<option key={index} value={project._id}> { project.name } </option>)
-           })
-         } 
-         </Input>)
+      selectteam = (
+         <Tab.Container defaultActiveKey="first">
+                <Row>
+                  <Col sm="3" md="3">
+                    <Nav variant="pills" className="flex-column">
+                      <Nav.Item>
+                        <Nav.Link eventKey="first">Team</Nav.Link>
+                      </Nav.Item>
+                      <Nav.Item>
+                        <Nav.Link eventKey="second">User</Nav.Link>
+                      </Nav.Item>
+                    </Nav>
+                  </Col>
+                  <Col sm="8" md="8">
+                    <Tab.Content>
+                      <Tab.Pane eventKey="first">
+                        {teamselection}
+                      </Tab.Pane>
+                      <Tab.Pane eventKey="second">
+                        {userselection}
+                      </Tab.Pane>
+                    </Tab.Content>
+                  </Col>
+                </Row>
+              </Tab.Container>
+      );
       }
       else
       {
-         unteam = (<Input type="text" id="teamid" value={this.props.team} disabled></Input>)
+         selectteam = (<Input type="text" id="teamid" value={this.props.team} disabled></Input>)
       }
+      
       return(
          <>
          <Modal   
@@ -119,12 +216,6 @@ export default class ProjectModal extends Component{
              </Modal.Title>
            </Modal.Header>
            <Modal.Body>
-           {/* <strong>Assigned Project:</strong>
-           {
-              this.props.projects.map((project,index)=>{
-                 return <><br/><label>{index+1}.{project.title}<br/></label></>
-              })
-           } */}
            <Form>
               <Form.Group as={Row}>
                  <Form.Label column sm="3">
@@ -132,29 +223,27 @@ export default class ProjectModal extends Component{
                  </Form.Label>
                  <Form.Control type="text" disabled value= {this.props.title}/>
               </Form.Group>
-              <Form.Group>
+              <Form.Group as={Row}>
                  <Form.Label column sm="3">
                     Workspace
                  </Form.Label>
                  <Form.Control type="text" disabled value={this.props.workspace}/>
               </Form.Group>
-              <Form.Group as={Row} controlId="formPlaintextPassword">
-                <Form.Label column sm="3">
+              <Form.Group as={Row}>
+                <Form.Label>
                   Assigned To
                 </Form.Label>
-                <Col sm="9">
-                    <Form.Group controlId="exampleForm.ControlSelect1">
-                    {unteam}
-                    </Form.Group>
-                </Col>
-              </Form.Group>
-              <Form.Group>
+                </Form.Group>
+                <Form.Group>
+                  {selectteam}
+                  </Form.Group>
+              <Form.Group as={Row}>
                  <Form.Label column sm="3">
                     Start Date
                  </Form.Label>
                  <Form.Control type="date" disabled value= {this.props.startdate}/>
               </Form.Group>
-              <Form.Group>
+              <Form.Group as={Row}>
                  <Form.Label column sm="3">
                     End Date
                  </Form.Label>

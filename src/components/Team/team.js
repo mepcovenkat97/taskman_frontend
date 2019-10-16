@@ -102,11 +102,11 @@ class Team extends Component{
        //console.log(this.state.name, this.state.team)
      }
 
-     updateHandler = event => {
+     updateHandle(event) {
        event.preventDefault();
        console.log(event.target.id);
       this.state.user.push(event.target.value);
-      console.log(this.state.user);
+      //console.log(name);
      }
 
      createHandler = event => {
@@ -128,8 +128,11 @@ class Team extends Component{
          formdata.push(encodeURIComponent('projectid')+'='+encodeURIComponent(this.state.team))
          formdata = formdata.join("&")
          const response = await addTeam(formdata);
-         alert("Team Created")
-         this.state.changed();
+         if(response.status === 200)
+         {
+            alert("Team Created")
+            this.toggleChanged();
+         }
        }
        catch(e){}
      }
@@ -154,7 +157,10 @@ class Team extends Component{
                      <Form.Row>
                         <Form.Group as={Col} sm="12" md="6" controlId="formGridState">
                           <Form.Label>Users</Form.Label>
-                          <Input type="select" multiple id="userid" onClick={this.updateHandler}>
+                          <Form.Text className="text-muted">
+                                    You can select Multiple Users
+                           </Form.Text>
+                           <Input className="custom-select" type="select" multiple id="userid" onClick={this.updateHandler}>
                               <option>--Choose--</option>
                             {
                               this.state.users.map((project,index)=>{
@@ -162,13 +168,14 @@ class Team extends Component{
                                 return (<option key={index} value={project._id}> { project.name } </option>)
                               })
                             }
-                            </Input>
-                            <Form.Text className="text-muted">
-                                    Users Listed above are not in any of the teams.
-                           </Form.Text>
+                            </Input> 
+
                         </Form.Group>
                         <Form.Group as={Col} sm="12" md="6" controlId="formGridState">
                           <Form.Label>Project</Form.Label>
+                          <Form.Text className="text-muted">
+                                    Project without Team will be Listed
+                           </Form.Text>
                            <Input type="select" id="team" onChange={this.handleChange}>
                               <option>--Choose--</option>
                             {
@@ -177,13 +184,6 @@ class Team extends Component{
                               })
                             }
                             </Input>
-                            {/* <Select mode="multiple">
-                            {
-                              this.state.projects.map((project,index)=>{
-                                return (<Option key={index} value={project._id}> { project.title } </Option>)
-                              })
-                            }
-                            </Select> */}
                         </Form.Group>
                      </Form.Row> 
                         <FormGroup row>

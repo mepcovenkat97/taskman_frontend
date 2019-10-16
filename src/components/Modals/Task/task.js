@@ -97,7 +97,7 @@ export default class TaskModal extends Component
                       <Form.Label>Message</Form.Label>
                       {
                          this.props.message.map((msg,index)=>{
-                            return <Form.Control placeholder="First name" value={msg.content} disabled/>
+                            return <Form.Control value={msg.content} disabled/>
                          })
                       }
                         

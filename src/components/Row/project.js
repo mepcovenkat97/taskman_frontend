@@ -43,6 +43,8 @@ export default class ProjectRow extends Component{
                title = {this.props.title}
                workspace = {this.props.workspace}
                team = {this.props.team}
+               teams = {this.props.teams}
+               users = {this.props.users}
                teamid = {this.props.teamid}
                startdate = {this.props.startdate}
                enddate = {this.props.enddate}
