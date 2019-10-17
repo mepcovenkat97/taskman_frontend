@@ -19,7 +19,7 @@ export default class TeamModal extends Component
    async getAllUserDetails(){
       try{
          const res = await getAllUser();
-         const filterres = res.data.filter(data => (!data.teamid))
+         const filterres = res.data.filter(data => (!data.teamid && data.type != "admin"))
          this.setState({users:filterres});
       }
       catch(e){}

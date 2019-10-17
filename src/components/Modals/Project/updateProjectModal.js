@@ -34,7 +34,7 @@ export default class ProjectModal extends Component{
    async getAllUserDetails(){
       try{
          const res = await getAllUser();
-         const filterres = res.data.filter(data => (data.name!==this.props.team))
+         const filterres = res.data.filter(data => ( data.type!= "admin"))
          this.setState({users:filterres});
       }
       catch(e){}
@@ -78,31 +78,6 @@ export default class ProjectModal extends Component{
    {
       try{
          let formdata = [];
-         // if(this.state.team == "Unassigned")
-         // {
-         //    formdata.push(encodeURIComponent("enddate")+'='+encodeURIComponent(this.state.enddate))
-         //    formdata = formdata.toString();
-         //    const res = await updateProject(this.props.id,formdata)
-         //    if(res.status === 200)
-         //    {
-         //       alert("Data Modified Successfully");
-         //       this.props.changed()
-         //       this.props.onHide()
-         //    }
-         // }
-         // else
-         // {
-         //    formdata.push(encodeURIComponent("teamid")+'='+encodeURIComponent(this.state.teamid))
-         //    formdata.push(encodeURIComponent("enddate")+'='+encodeURIComponent(this.state.enddate))
-         //    formdata = formdata.join("&");
-         //    const res = await updateProject(this.props.id,formdata)
-         //    if(res.status === 200)
-         //    {
-         //       alert("Data Modified Successfully");
-         //       this.props.changed()
-         //       this.props.onHide()
-         //    }
-         // }
          if(this.state.whomselect == null)
          {
             //formdata.push(encodeURIComponent("teamid")+'='+encodeURIComponent(this.state.teamid))
@@ -161,7 +136,7 @@ export default class ProjectModal extends Component{
          <Input type="select" id="userid" onChange={this.handleUserChange}>
             <option>--Choose--</option>
           {
-            this.props.users.map((team,index)=>{
+            this.state.users.map((team,index)=>{
               return (<option key={index} value={team._id}> { team.name } </option>)
             })
           }

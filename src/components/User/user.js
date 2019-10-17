@@ -14,7 +14,8 @@ import {
  } from 'reactstrap';
  import Form from 'react-bootstrap/Form'
 import UserRow from "../Row/user";
-import { getAllUser } from '../../apis/user';
+import { getAllUser, createUser } from '../../apis/user';
+import { getAllTeams } from '../../apis/team';
 class User extends Component{
 
    constructor(props)
@@ -24,11 +25,19 @@ class User extends Component{
    }
    state = {
       activeTab: new Array(2).fill('1'),
-      users : []
+      users : [],
+      rowusers:[],
+      name:null,
+      email:null,
+      password:null,
+      type:null,
+      teams:[],
+      teamid:null,
    }
 
    componentDidMount(){
       this.getAllUserDetails();
+      this.getAllTeamDetails()
    }
 
    toggle(tabPane, tab) {
@@ -39,10 +48,69 @@ class User extends Component{
       });
     }
 
+    async getAllTeamDetails(){
+      try{
+        const res = await getAllTeams()
+        this.setState({teams:res.data})
+        //console.log(this.state.teams)
+      }
+      catch(e){}
+    }
+
+    handleTextChange = event =>{
+      event.preventDefault();
+      console.log(event.target.value)
+      this.setState({[event.target.id]:event.target.value})
+      console.log(this.state.name,this.state.email,this.state.type,this.state.teamid);
+    }
+
+    createHandler = event => {
+      event.preventDefault();
+      console.log("USer")
+      {
+        this.state.users.map((user,index)=>{
+          if(user.email == this.state.email)
+          {
+            alert("User with such a email is already existing")
+          }
+        })
+      }
+      this.createUserDetails();
+    }
+
+    async createUserDetails(){
+      try{
+        let formdata = [];
+        if(this.state.teamid)
+        {
+        formdata.push(encodeURIComponent('name')+'='+encodeURIComponent(this.state.name));
+        formdata.push(encodeURIComponent('email')+'='+encodeURIComponent(this.state.email));
+        formdata.push(encodeURIComponent('password')+'='+encodeURIComponent(this.state.password));
+        formdata.push(encodeURIComponent('type')+'='+encodeURIComponent(this.state.type));
+        formdata.push(encodeURIComponent('teamid')+'='+encodeURIComponent(this.state.teamid));
+        formdata = formdata.join("&");
+        const response = await createUser(formdata);
+        alert("User Created Successfull")
+        }
+        else{
+          formdata.push(encodeURIComponent('name')+'='+encodeURIComponent(this.state.name));
+        formdata.push(encodeURIComponent('email')+'='+encodeURIComponent(this.state.email));
+        formdata.push(encodeURIComponent('password')+'='+encodeURIComponent(this.state.password));
+        formdata.push(encodeURIComponent('type')+'='+encodeURIComponent(this.state.type));
+        formdata = formdata.join("&");
+        const response = await createUser(formdata);
+        alert("User Created Successfull")
+        }
+      }
+      catch(e){}
+    }
+
    async getAllUserDetails(){
       try{
          const res = await getAllUser()
-         this.setState({users:res.data})
+         const filres = res.data.filter(data => (data.type != "admin"))
+         this.setState({users:filres})
+         //this.setState({})
          console.log(this.state.users);
       }
       catch(e){}
@@ -62,11 +130,11 @@ class User extends Component{
                  <Form.Row>
                         <Form.Group as={Col} sm="12" md="6" controlId="formGridState">
                           <Form.Label>Name</Form.Label>
-                          <Form.Control type="text" id="Name" placeholder="Name of the User" onChange={this.handleTextChange}/>
+                          <Form.Control type="text" id="name" placeholder="Name of the User" onChange={this.handleTextChange}/>
                         </Form.Group>
                         <Form.Group as={Col} sm="12" md="6" controlId="formGridState">
                           <Form.Label>Email-ID</Form.Label>
-                          <Form.Control type="email" id="Name" placeholder="Email of the User" onChange={this.handleTextChange}/>
+                          <Form.Control type="email" id="email" placeholder="Email of the User" onChange={this.handleTextChange}/>
                         </Form.Group>
                      </Form.Row>
                      <Form.Row>        
@@ -76,17 +144,33 @@ class User extends Component{
                         </Form.Group>
                         <Form.Group as={Col} sm="12" md="6" controlId="formGridState">
                           <Form.Label>Role</Form.Label>
-                          <Form.Control as="select">
-                             <option>User</option>
-                             <option>Admin</option>
-                           </Form.Control>
+                          <Input id="type" type="select" onChange={this.handleTextChange}>
+                            <option value="" selected>--Choose--</option>
+                             <option value="user">User</option>
+                             <option value="admin">Admin</option>
+                           </Input>
                         </Form.Group>
                      </Form.Row>
+                        <Form.Group controlId="formGridState">
+                          <Form.Label>Team</Form.Label>
+                          <Input type="select" id="teamid" onClick={this.handleTextChange}>
+                              <option>--Choose--</option>
+                            {
+                              this.state.teams.map((project,index)=>{
+                                console.log(project._id);
+                                return (<option key={index} value={project._id}> { project.name } </option>)
+                              })
+                            }
+                            </Input>
+                            <Form.Text className="text-muted">
+                                    Team Selection is Optional
+                           </Form.Text>
+                        </Form.Group>
                         <FormGroup row>
                           <Col sm="4"></Col>
                             <Col sm="4" className="column">
-                              <Button type="submit" size="lg" color="success" onClick={this.createHandler}><i className="fa fa-dot-circle-o"></i> Create </Button>&nbsp;&nbsp;
-                              <Button type="reset" size="lg" color="danger"><i className="fa fa-ban"></i> Cancel</Button>
+                              <Button type="submit" size="xs" color="success" onClick={this.createHandler}><i className="fa fa-dot-circle-o"></i> Create </Button>&nbsp;&nbsp;
+                              <Button type="reset" size="xs" color="danger"><i className="fa fa-ban"></i> Cancel</Button>
 
                             </Col>
                         </FormGroup>
@@ -117,7 +201,7 @@ class User extends Component{
                   <tbody>
                   {
                      this.state.users.map((user,index)=>{
-                        console.log("User ==> ",user)
+                        //console.log("User ==> ",user)
                         return <UserRow type={user.type} name={user.name} email={user.email} task={user.taskid.length}/>
                      })
                   }

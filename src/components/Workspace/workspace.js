@@ -12,6 +12,7 @@ import {
    Label,
    Row,
  } from 'reactstrap';
+ import Alert from 'react-bootstrap/Alert'
 import Form from 'react-bootstrap/Form'
 import Card from 'react-bootstrap/Card'
 import WorkspaceRow from "../Row/workspace";
@@ -80,10 +81,10 @@ class Workspace extends Component{
        this.createWorkspace();
        
     }
-
     async createWorkspace() {
        try
        {
+         
           let formdata = [];
           formdata.push(encodeURIComponent('name')+'='+encodeURIComponent(this.state.name))
           formdata = formdata.toString()

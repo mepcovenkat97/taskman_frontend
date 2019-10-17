@@ -298,7 +298,7 @@ class Project extends Component{
               </CardHeader>
               <CardBody>
               &nbsp;
-                <Table responsive className="text-center">
+                <Table hover responsive className="text-center">
                   <thead className="thead-light">
                   <tr>
                     <th>Flag</th>

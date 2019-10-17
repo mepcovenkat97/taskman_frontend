@@ -25,6 +25,10 @@ export default class TaskRow extends Component{
       {
          statusflag = (<Badge variant="success">On Going</Badge>)
       }
+      else if(this.props.status == "completed")
+      {
+         statusflag = (<Badge variant="success">Completed</Badge>)
+      }
       else if(this.props.status == "not started")
       {
          statusflag = (<Badge variant="secondary">Not Started</Badge>)

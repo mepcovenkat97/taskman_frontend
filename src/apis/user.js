@@ -21,3 +21,12 @@ export const getUserById = async(id) => {
    })
    return res
 }
+export const createUser = async(data) => {
+   const token = getAuthToken();
+   const res = await axios.post(`${apiUrl}/register`,data,{
+      headers:{
+         Authorization:token
+      }
+   })
+   return res;
+}

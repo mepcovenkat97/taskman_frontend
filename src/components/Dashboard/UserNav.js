@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 
 import AuthNav from './AuthNav';
-import { deleteUser } from '../../apis/storage';
+import { deleteUser, getUser } from '../../apis/storage';
 
 export default class UserNav extends Component {
 
@@ -12,6 +12,7 @@ export default class UserNav extends Component {
     this.props.history.push('/login')
   }
   render() {
+    const user = getUser();
     return (
       <nav className="navbar fixed-top navbar-expand-lg navbar-dark bg-dark">
         <Link className="navbar-brand mb-0 h1" to="/userdashboard">Task-MAN</Link>
@@ -20,7 +21,9 @@ export default class UserNav extends Component {
         </button>
         <div className="collapse navbar-collapse" id="navbarNav">
           
-          <AuthNav onLogout={e=>this.signOut(e)}/>
+          <AuthNav
+            user = {user.user.name}
+           onLogout={e=>this.signOut(e)}/>
         </div>
       </nav>
     );

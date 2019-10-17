@@ -60,7 +60,7 @@ class Team extends Component{
     async getAllUserDetails(){
       try{
         const res = await getAllUser()
-        const filterres = res.data.filter(data => (!data.teamid))
+        const filterres = res.data.filter(data => (!data.teamid && data.type != "admin"))
         this.setState({users:filterres})
         console.log(this.state.users);
       }
@@ -102,9 +102,9 @@ class Team extends Component{
        //console.log(this.state.name, this.state.team)
      }
 
-     updateHandle(event) {
+     updateHandler = event => {
        event.preventDefault();
-       console.log(event.target.id);
+       console.log(event.target.value);
       this.state.user.push(event.target.value);
       //console.log(name);
      }
@@ -160,7 +160,7 @@ class Team extends Component{
                           <Form.Text className="text-muted">
                                     You can select Multiple Users
                            </Form.Text>
-                           <Input className="custom-select" type="select" multiple id="userid" onClick={this.updateHandler}>
+                           <Input type="select" multiple id="userid" onClick={this.updateHandler}>
                               <option>--Choose--</option>
                             {
                               this.state.users.map((project,index)=>{
