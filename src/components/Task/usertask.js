@@ -9,8 +9,15 @@ export default class UserTask extends Component{
       this.state = {
          tasks:[],
          complete:[],
-         //changed:null
+         changed:false
       }
+   }
+
+   toggleChanged = () =>{
+      const change = !this.state.changed;
+      this.setState({changed:change,tasks:[]})
+      this.getUserTaskDetails()
+     // this.getUserTaskDetails()
    }
 
    
@@ -23,9 +30,12 @@ export default class UserTask extends Component{
       try{
          const res = await getAllTask();
          const user = getUser();
-         console.log(user.user.taskid)
-         user.user.taskid.map(async (id,index)=>{
-            const temp = await getTaskById(id);
+         const filterres = res.data.filter(asstask => (asstask.userid._id == user.user._id));
+         //console.log("FIlter res =>",filterres);
+         //console.log(user.user.taskid)
+         filterres.map(async (id,index)=>{
+            console.log("FILTERED ID =>",id)
+            const temp = await getTaskById(id._id);
            this.state.tasks.push(temp.data);
            this.setState({complete:this.state.tasks})
          })
@@ -54,7 +64,7 @@ export default class UserTask extends Component{
             {
               this.state.tasks.map((task,index)=>{
                  console.log("Task ==>",task)
-                return <UserTaskRow  messageid={task.messageid} changed={this.state.changed} status={task.status} id={task._id} name={task.name} project={task.projectid}  priority={task.priority} startdate={task.startdate} enddate={task.enddate} toggleChanged={this.props.toggleChanged}/>
+                return <UserTaskRow  messageid={task.messageid} changed={this.state.changed} status={task.status} id={task._id} name={task.name} project={task.projectid}  priority={task.priority} startdate={task.startdate} enddate={task.enddate} toggleChanged={this.toggleChanged}/>
               })
             }
             </tbody>

@@ -1,5 +1,6 @@
 import React, { Component } from "react"
 import Button from "react-bootstrap/Button"
+import Badge from 'react-bootstrap/Badge'
 import { updateTaskStatus } from "../../apis/task"
 import { getProjectById } from "../../apis/project";
 import UserTaskModal from "../Modals/UserTask/usertask";
@@ -45,9 +46,26 @@ export default class UserTaskRow extends Component{
       else{
          tbd = (<Button  onClick={this.updateHandler}>Complete</Button>)
       }
+      let statusflag;
+      if(this.props.status == "incomplete")
+      {
+         statusflag = (<Badge variant="danger">incomplete</Badge>)
+      }
+      else if(this.props.status == "on going")
+      {
+         statusflag = (<Badge variant="success">On Going</Badge>)
+      }
+      else if(this.props.status == "completed")
+      {
+         statusflag = (<Badge variant="success">Completed</Badge>)
+      }
+      else if(this.props.status == "not started")
+      {
+         statusflag = (<Badge variant="secondary">Not Started</Badge>)
+      }
       return(
          <tr>
-            <td>{this.state.status}</td>
+            <td>{statusflag}</td>
             <td>{this.props.name}</td>
             <td>{this.state.projectname}</td>
             <td>{this.props.priority}</td>
@@ -57,6 +75,7 @@ export default class UserTaskRow extends Component{
             <td>{tbd}</td>
             <UserTaskModal
                name = {this.props.name}
+               toggleChanged = {this.props.toggleChanged}
                id={this.props.id}
                messageid = {this.props.messageid}
                show = {this.state.showModal} 

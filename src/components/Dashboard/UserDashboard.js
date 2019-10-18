@@ -30,7 +30,7 @@ export default class UserDashboard extends Component{
     teamname:"",
     tasks:[],
     complete:[],
-    changed:null,
+    changed:false,
   }
 
   toggleChanged = () =>{
@@ -53,23 +53,7 @@ export default class UserDashboard extends Component{
     catch(e){}
   }
 
-//   async getUserTaskDetails(){
-//     try{
-//        const res = await getAllTask();
-//        const user = getUser();
-//        console.log(user.user.taskid)
-//        user.user.taskid.map(async (id,index)=>{
-//           const temp = await getTaskById(id);
-//          this.state.tasks.push(temp.data);
-//          this.setState({complete:this.state.tasks})
-//        })
-//        console.log(this.state.complete)
-      
-//     }
-//     catch(e){}
-//  }
-
-
+  
    render(){
       return(
          <div>

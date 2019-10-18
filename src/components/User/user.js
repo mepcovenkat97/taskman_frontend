@@ -109,8 +109,8 @@ class User extends Component{
       try{
          const res = await getAllUser()
          const filres = res.data.filter(data => (data.type != "admin"))
-         this.setState({users:filres})
-         //this.setState({})
+         this.setState({rowusers:filres})
+         this.setState({users:res.data})
          console.log(this.state.users);
       }
       catch(e){}
@@ -200,7 +200,7 @@ class User extends Component{
                   </thead>
                   <tbody>
                   {
-                     this.state.users.map((user,index)=>{
+                     this.state.rowusers.map((user,index)=>{
                         //console.log("User ==> ",user)
                         return <UserRow type={user.type} name={user.name} email={user.email} task={user.taskid.length}/>
                      })

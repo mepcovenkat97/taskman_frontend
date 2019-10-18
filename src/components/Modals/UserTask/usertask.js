@@ -38,6 +38,7 @@ export default class UserTaskModal extends Component
          console.log(formdata);
          const msg = await createMessage(formdata);
          alert("Message Added to the Task")
+         this.props.toggleChanged()
       }
       catch(e){}
    }

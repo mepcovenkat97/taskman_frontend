@@ -1,11 +1,14 @@
 import React, { Component } from 'react';
-import { Link, NavLink } from 'react-router-dom';
+import { Link, NavLink, withRouter } from 'react-router-dom';
 
 import AuthNav from './AuthNav';
 import { deleteUser, getUser } from '../../apis/storage';
 
-export default class UserNav extends Component {
+ class UserNav extends Component {
 
+  constructor(props){
+    super(props);
+  }
   signOut(e){
     e.preventDefault();
     deleteUser();
@@ -29,3 +32,5 @@ export default class UserNav extends Component {
     );
   }
 }
+
+export default withRouter(UserNav)
