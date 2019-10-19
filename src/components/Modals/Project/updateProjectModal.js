@@ -227,9 +227,9 @@ export default class ProjectModal extends Component{
               <Button type="submit" onClick={this.updateHandler}>Update Project Details</Button>
            </Form>
            </Modal.Body>
-           <Modal.Footer>
+           {/* <Modal.Footer>
              <Button onClick={this.props.onHide}>Close</Button>
-           </Modal.Footer>
+           </Modal.Footer> */}
          </Modal>
          </>
       )

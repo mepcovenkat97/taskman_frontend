@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {Select} from "antd";
+import Select from "react-select";
 import {Col, Nav, NavItem, NavLink, TabContent, TabPane} from 'reactstrap';
 
 import {
@@ -20,7 +20,12 @@ import { getAllTeams, addTeam } from '../../apis/team';
 import { getALlProject } from '../../apis/project';
 import { getAllUser } from '../../apis/user';
 
-const { Option } = Select;
+// const options = [
+//   { value: 'chocolate', label: 'Chocolate' },
+//   { value: 'strawberry', label: 'Strawberry' },
+//   { value: 'vanilla', label: 'Vanilla' }
+// ]
+
 class Team extends Component{
 
    constructor(props) {
@@ -32,6 +37,7 @@ class Team extends Component{
         projects:[],
         users:[],
         user:[],
+        options:[],
         selected:null,
         userid:null,
         name:null,
@@ -42,6 +48,8 @@ class Team extends Component{
       this.toggle = this.toggle.bind(this);
       //this.handleChange = this.handleChange.bind(this);
     }
+
+    
 
     toggleChanged = () =>{
       const change = !this.state.changed;
@@ -61,8 +69,15 @@ class Team extends Component{
       try{
         const res = await getAllUser()
         const filterres = res.data.filter(data => (!data.teamid && data.type != "admin"))
+        const optionsdata =[];
+        filterres.map((res,index)=>{
+          optionsdata.push({"value":res._id,"label":res.name})
+        })
+        console.log(optionsdata);
+        this.setState({options:optionsdata});
         this.setState({users:filterres})
-        console.log(this.state.users);
+       // this.setState({options:{"value":}})
+        //console.log(this.state.users);
       }
       catch(e){}
     }
@@ -72,7 +87,9 @@ class Team extends Component{
         const res = await getALlProject()
         //console.log(res.data)
         const filterres = res.data.filter(data => (!data.teamid && !data.userid))
+        
         this.setState({projects:filterres})
+        
        // console.log(this.state.projects)
       }
       catch(e){}
@@ -103,10 +120,27 @@ class Team extends Component{
      }
 
      updateHandler = event => {
-       event.preventDefault();
-       console.log(event.target.value);
-      this.state.user.push(event.target.value);
-      //console.log(name);
+       if(event == null )
+       {
+        this.state.user.splice(0,this.state.user.length);
+       }
+      else if( event.length >= 1)
+      {
+      if(this.state.user.includes(event[event.length-1].value))
+      {
+        console.log("Hai")
+        const data = event;
+        this.state.user.splice(0,this.state.user.length)
+        data.map((d,i)=>{
+          this.state.user.push(d.value);
+        })
+      }
+      else
+      {
+        this.state.user.push(event[event.length-1].value);
+      }
+      }
+      console.log(this.state.user);
      }
 
      createHandler = event => {
@@ -118,7 +152,11 @@ class Team extends Component{
       })
        this.createTeam();
      }
-
+    //  handleChangeChk = (event,i) => {
+    //        let prj = this.state.users;
+    //        prj[i].checked = !prj[i].checked;
+    //        this.setState({users: prj});
+    //  }
      async createTeam(){
        try{
          console.log(this.state.user);
@@ -160,15 +198,21 @@ class Team extends Component{
                           <Form.Text className="text-muted">
                                     You can select Multiple Users
                            </Form.Text>
-                           <Input type="select" multiple id="userid" onClick={this.updateHandler}>
+                           {/* <Input type="select" multiple id="userid" data-live-search="true" onClick={this.updateHandler}>
                               <option>--Choose--</option>
+                  
                             {
                               this.state.users.map((project,index)=>{
                                 console.log(project._id);
-                                return (<option key={index} value={project._id}> { project.name } </option>)
+                                return (<option key={index} value={project._id}>{ project.name }</option>)
                               })
                             }
-                            </Input> 
+                            </Input>  */}
+                            <Select
+                              isMulti = {true}
+                              options={this.state.options}
+                              onChange={this.updateHandler}
+                            />
 
                         </Form.Group>
                         <Form.Group as={Col} sm="12" md="6" controlId="formGridState">

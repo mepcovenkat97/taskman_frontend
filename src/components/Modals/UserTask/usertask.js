@@ -17,6 +17,7 @@ export default class UserTaskModal extends Component
       this.getMessageDetails();
    }
 
+  
    handleChange = event => {
       event.preventDefault()
       this.setState({content:event.target.value});
@@ -50,7 +51,10 @@ export default class UserTaskModal extends Component
          this.props.messageid.map(async (msg,index) => {
             const msg1 = await getMessageById(msg);
             this.state.getmsg.push(msg1.data);
-            this.setState({message:this.state.getmsg});
+            const sortedmsg = this.state.getmsg.sort((a,b)=>{
+               return a.createdAt.localeCompare(b.createdAt);
+            })
+            this.setState({message:sortedmsg});
          })
       }
       catch(e){}

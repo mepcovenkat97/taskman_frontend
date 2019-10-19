@@ -26,7 +26,11 @@ export default class MessageModal extends Component {
          this.props.message.map(async (msg, index) => {
             const msg1 = await getMessageById(msg._id);
             this.state.getmsg.push(msg1.data);
-            this.setState({ message: this.state.getmsg });
+            const sortedmsg = this.state.getmsg.sort((a,b)=>{
+               return a.createdAt.localeCompare(b.createdAt);
+               //return a.createdAt - b.createdAt
+            })
+            this.setState({ message: sortedmsg });
          })
       }
       catch (e) { }
@@ -50,6 +54,7 @@ export default class MessageModal extends Component {
          const msg = await createMessage(formdata);
          alert("Message Added to the Task")
          this.props.changed();
+         this.props.onMsgHide();
          this.props.onHide();
       }
       catch (e) { }
@@ -84,9 +89,9 @@ export default class MessageModal extends Component {
                   <Button type="submit" onClick={this.createMessageHandler}>Add Message</Button>
                </Form>
             </Modal.Body>
-            <Modal.Footer>
+            {/* <Modal.Footer>
              <Button onClick={this.props.onMsgHide}>Close</Button>
-           </Modal.Footer>
+           </Modal.Footer> */}
          </Modal>
       )
    }

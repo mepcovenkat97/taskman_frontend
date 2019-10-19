@@ -140,6 +140,8 @@ export default class TaskModal extends Component
                         <Button size="xs" block onClick={() => this.toggleMsgModel()}><b>View Messages</b></Button>
 
                         <MessageModal
+                              changed = {this.props.changed}
+                              onHide = {this.props.onHide}
                               id={this.props.id}
                               message = {this.props.message}
                               show = {this.state.showMsgModal}
